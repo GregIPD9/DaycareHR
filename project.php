@@ -1,5 +1,5 @@
 <?php
-//Nu3CzSu5Hjo4URWE
+//// E7lpCzUOaBjSLXMl
 
 session_cache_limiter(false);
 session_start();
@@ -7,9 +7,9 @@ session_start();
 require_once 'vendor/autoload.php';
 
 //DB::$host = '127.0.0.1';
-DB::$user = 'slimtodo';
-DB::$password = 'Nu3CzSu5Hjo4URWE'; 
-DB::$dbName = 'slimtodo';
+DB::$user = 'daycare';
+DB::$password = 'E7lpCzUOaBjSLXMl'; 
+DB::$dbName = 'daycare';
 DB::$port = 3333;
 DB::$encoding = 'utf8';
 
