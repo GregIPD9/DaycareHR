@@ -6,3 +6,7 @@ Will do next 48 hours:
 2.Finalize the DB structure, assign all the constraints.
 3.Create the Templates: master, register and register_success, login and login_success
 3.Insert users to DB table "USERS".
+
+
+Users:
+1 Admin admin@test.com Test123 Admin
