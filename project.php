@@ -72,6 +72,10 @@ $app->get('/login', function() use ($app) {
     $app->render('login.html.twig');
 });
 
+$app->get('/logout', function() use ($app) {
+    $app->render('logout.html.twig');
+});
+
 $app->post('/login', function() use ($app) {
    // $name = $app->request()->post('name');
     $email = $app->request()->post('email');
@@ -87,7 +91,6 @@ $app->post('/login', function() use ($app) {
             $error = true;
         }
     }
-    // decide what to render
     if ($error) {
         $app->render('login.html.twig', array("error" => true));
     } else {

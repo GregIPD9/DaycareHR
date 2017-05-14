@@ -8,5 +8,7 @@ Will do next 48 hours:
 3.Insert users to DB table "USERS".
 
 
-Users:
-1 Admin admin@test.com Test123 Admin
+Users in our DB daycare:
+1 Admin              admin@test.com      Test123   Admin
+2 Maria Main         maria@daycare.com   Maria123  Director
+3 Martin Scorcezze   martin@daycare.com  Martin123 Educator
