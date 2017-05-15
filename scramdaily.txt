@@ -1,12 +1,43 @@
-12/05/2017
+--- May 15 Andrei
+DID SINCE LAST SCRUM:
+1. Create a Main page with Registration and Login forms
+2. Finalize the DB structure, assign all the constraints.
+3. Create the Templates: master, register and register_success, login and login_success
+4. Insert users to DB table "USERS".
+WILL DO IN THE NEXT 24 HOURS
+1. Display BLOB from DB
+WHERE I NEED HELP IS...
+1. BLOB
 
-Will do next 48 hours:
+--- May 15 Gregory
+DID SINCE LAST SCRUM:
+1. Proposal 
+WILL DO IN THE NEXT 24 HOURS
+1. Fill DB with data
+2. Trello add tasks (user cans)
+WHERE I NEED HELP IS...
+1. 
 
+--- May 12 Andrei
+DID SINCE LAST SCRUM:
+1.
+WILL DO IN THE NEXT 48 HOURS
 1.Create a Main page with Registration and Login forms
 2.Finalize the DB structure, assign all the constraints.
 3.Create the Templates: master, register and register_success, login and login_success
 3.Insert users to DB table "USERS".
+WHERE I NEED HELP IS...
+1. 
 
+--- May 12 Gregory
+DID SINCE LAST SCRUM:
+1. 
+WILL DO IN THE NEXT 48 HOURS
+1. Proposal 
+WHERE I NEED HELP IS...
+1. 
+
+*******************************************************************************
 
 Users in our DB daycare:
 1 Admin              admin@test.com      Test123   Admin
