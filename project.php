@@ -100,5 +100,115 @@ $app->post('/login', function() use ($app) {
     }
 });
 
+//LOGOUT
+$app->get('/logout', function() use ($app) {
+    unset($_SESSION['daycareuser']);
+    $app->render("logout.html.twig");
+});
+
+
+// List of educators
+
+$app->get('/listofeducators', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $educators = DB::query("SELECT * FROM educator");
+    $app->render("listofeducators.html.twig", ["educators" => $educators]);
+});
+
+$app->post('/listofeducators', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $educators = DB::query("SELECT * FROM educator");
+    $app->render("listofeducators.html.twig", ["name" => $educators['name'],
+    "phone" => $educators['phone'],
+    "photo" => json_decode($educators['photo']) 
+    ]);
+});
+// Edit 
+
+$app->get('/edit/:educatorId', function() use ($app) {
+ 
+    $educators = DB::queryFirstRow("SELECT * FROM educator WHERE id=%s", $educatorId);
+    if ($educators != null) {
+        $app->render('edit.html.twig', array(
+            "educatorId" => $educators['educatorId'],
+            "name" => $educators['name'],
+            "phone" => $educators['phone'],
+            "photo" => $educators['photo']
+        ));
+    } else {
+        echo "No educators with this id. ";
+    }   
+});
+
+
+$app->post('/edit/:educatorId', function($educatorId) use ($app) {
+    $educatorId = $app->request()->post('educatorId');
+    $name = $app->request()->post('name');
+    $phone = $app->request()->post('phone');
+    $photo = $app->request()->post('photo');
+    $errorList = array();
+    $valueList = array('educatorId' => $educatorId);
+
+    $educators = DB::queryFirstRow("SELECT * FROM educator WHERE educatorId=%s", $educatorId);
+
+    if (strlen($name) < 2 || strlen($name) > 100) {
+        array_push($errorList, "name too short or too long");
+    }
+
+    if ($errorList) {
+        $app->render('edit.html.twig', array(
+        ));
+    } else {
+        DB::update('todos', array(
+            "name" => $name,
+            "phone" => $phone,
+            "photo" => $photo
+                ), "educatorId=%s", $educatorId);
+
+        $app->render('edit_success.html.twig', array(
+            "educatorId" => $educatorId,
+             "name" => $name,
+            "phone" => $phone,
+            "photo" => $photo
+        ));
+    }
+});
+
+//Delete
+
+$app->get('/delete/:educatorId', function($educatorId) use ($app) {
+
+    $educatorId = $_SESSION['daycareuser']['educatorId'];
+    $educators = DB::queryFirstRow("select * FROM educator WHERE educatorId=%s", $educatorId);
+    //echo json_encode($user, JSON_PRETTY_PRINT);
+    if ($educators != null) {
+        $app->render('delete.html.twig', array(
+            "educatorId" => $educators['educatorId'],
+            "name" => $educators['name'],
+            "phone" => $educators['phone'],
+            "photo" => $educators['photo']
+        ));
+    } else {
+        echo "Not educators with this id. ";
+    }
+});
+
+$app->post('/delete/:educatorId', function($educatorId) use ($app) {
+
+    $deleteResult = DB::delete('educator', "educatorId=%s", $educatorId);
+    if (!$deleteResult) {
+        
+    } else {
+
+        $app->render('delete_success.html.twig');
+    }
+}
+);
 //
 $app->run();
