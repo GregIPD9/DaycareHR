@@ -29,7 +29,9 @@
                         <td>{{ k.groupName }}</td>
                         <td>{{ k.motherName }}</td>
                         <td>{{ k.motherPhone }}</td>
-                        <td>{{ k.address }}</td>
+                        <td class="center"><a href="https://maps.google.com/?q={{ k.address }}">{{ k.address }}</a></td>
+
+                       
                         <td>{{ k.notes }}</td>
                         <td><a href="/edit/{{e.id}}">edit</a></td>
                         <td><a href="/delete/{{e.id}}">delete</a></td>
