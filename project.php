@@ -170,6 +170,7 @@ $app->get('/viewphotokids/:kidId', function($kidId) use ($app) {
     
 });
 
+
 // Edit 
 
 $app->get('/edit/:educatorId', function() use ($app) {
