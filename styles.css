@@ -1,9 +1,4 @@
 body {
-    background-color: #ffffcc;
+    background-color: lightgrey;
 }
-#centerContent {
-    width: 500px;
-    padding: 0;
-    margin: 0 auto;
-    background-color: white;
-}
+

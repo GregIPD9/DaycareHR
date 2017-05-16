@@ -12,11 +12,25 @@
                 <th>Name</th>
                 <th>Phone</th>
                 <th>Photo</th>
+                <th>Email</th>
+                <th>Group</th>
+                <th>Hire date</th>
+                <th>Salary</th>
+                <th>Previous Vacation</th>
+                <th>Next Vacation</th>
+                <th>Edit</th>
+                <th>Delete</th>
                     {% for e in educators %}
                     <tr>
                         <td>{{ e.name }}</td>
                         <td>{{ e.phone }}</td>
-                        <td>{{ e.photo }}</td>
+                        <td><img src="/viewphoto/{{e.educatorId}}"</td>
+                        <td>{{ e.email }}</td>
+                        <td>{{ e.groupName }}</td>
+                        <td>{{ e.startDate }}</td>
+                        <td>{{ e.yearlySalary }}</td>
+                        <td>{{ e.previousVacation }}</td>
+                        <td>{{ e.nextVacation }}</td>
                         <td><a href="/edit/{{e.id}}">edit</a></td>
                         <td><a href="/delete/{{e.id}}">delete</a></td>
                     </tr>

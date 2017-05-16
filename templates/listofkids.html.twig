@@ -1,0 +1,48 @@
+{% extends "master.html.twig" %}
+
+{% block title %}Kids list{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>
+            <strong>Kids List</strong>
+        </h2>
+        <form method="post" >
+            <table border="1">
+                <th>Name</th>
+                <th>Age</th>
+                <th>Photo</th>
+                <th>Allergies</th>
+                <th>Group</th>
+                <th>Mother</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Notes</th>
+                <th>Edit</th>
+                <th>Delete</th>
+                    {% for k in kids %}
+                    <tr>
+                        <td>{{ k.kidName }}</td>
+                        <td>{{ k.age }}</td>
+                        <td><img src="/viewphotokids/{{k.kidId}}"</td>
+                        <td>{{ k.allergies }}</td>
+                        <td>{{ k.groupName }}</td>
+                        <td>{{ k.motherName }}</td>
+                        <td>{{ k.motherPhone }}</td>
+                        <td class="center"><a href="https://maps.google.com/?q={{ k.address }}" target="_blank">{{ k.address }}</a></td>
+
+                       
+                        <td>{{ k.notes }}</td>
+                        <td><a href="/edit/{{e.id}}">edit</a></td>
+                        <td><a href="/delete/{{e.id}}">delete</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <div>
+                <button type="submit" class="btn btn--right"><a href="/add" class='btn--no--underline'>Add Child</a></button>
+            </div>
+        </form>    
+    </div>
+
+{% endblock %}
+

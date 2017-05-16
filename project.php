@@ -110,25 +110,66 @@ $app->get('/logout', function() use ($app) {
 // List of educators
 
 $app->get('/listofeducators', function() use ($app) {
-    if (!$_SESSION['daycareuser']) {
-        $app->render('forbidden.html.twig');
-        return;
-    }
-    $educators = DB::query("SELECT * FROM educator");
-    $app->render("listofeducators.html.twig", ["educators" => $educators]);
+  //  if (!$_SESSION['daycareuser']) {
+   //     $app->render('login.html.twig');
+   //     return;
+  //  }
+   // $educatorId = $_SESSION['daycareuser']['id'];
+    $educators = DB::query("SELECT educatorId,name,phone,email,groupName,startDate,"
+            . "yearlySalary,previousVacation,nextVacation FROM educator");
+    //print_r($todoList);
+    $app->render('listofeducators.html.twig', ['educators' => $educators]);
 });
 
-$app->post('/listofeducators', function() use ($app) {
-    if (!$_SESSION['daycareuser']) {
-        $app->render('forbidden.html.twig');
-        return;
-    }
-    $educators = DB::query("SELECT * FROM educator");
-    $app->render("listofeducators.html.twig", ["name" => $educators['name'],
-    "phone" => $educators['phone'],
-    "photo" => json_decode($educators['photo']) 
-    ]);
+$app->get('/viewphoto/:educatorId', function($educatorId) use ($app) {
+ //   if (!$_SESSION['daycareuser']) {
+  //      $app->render('forbidden.html.twig');
+  //      return;
+ //   }
+   // $userId = $_SESSION['daycareuser']['id'];
+    $educators = DB::queryFirstRow("SELECT photo, photomimetype FROM educator WHERE educatorId=%i", $educatorId);
+           /* . " WHERE educatorId=%i" , $userId */
+   // if (!$educators) {
+     //   $app->response()->status(404);
+     //   echo "404 - not found";
+   // } else {    
+        $app->response->headers->set('Content-Type', $educators['photomimetype']);
+        echo $educators['photo'];
+ //   }
+    
 });
+
+// List of kids
+
+$app->get('/listofkids', function() use ($app) {
+  //  if (!$_SESSION['daycareuser']) {
+   //     $app->render('login.html.twig');
+   //     return;
+  //  }
+   // $educatorId = $_SESSION['daycareuser']['id'];
+    $kids = DB::query("SELECT kidId,kidName,age,groupName,motherName,motherPhone,address,allergies,notes"
+            ." FROM kids");
+    $app->render('listofkids.html.twig', ['kids' => $kids]);
+});
+
+$app->get('/viewphotokids/:kidId', function($kidId) use ($app) {
+ //   if (!$_SESSION['daycareuser']) {
+  //      $app->render('forbidden.html.twig');
+  //      return;
+ //   }
+   // $userId = $_SESSION['daycareuser']['id'];
+    $kids = DB::queryFirstRow("SELECT photo, photomimetype FROM kids WHERE kidId=%i", $kidId);
+           /* . " WHERE educatorId=%i" , $userId */
+   // if (!$educators) {
+     //   $app->response()->status(404);
+     //   echo "404 - not found";
+   // } else {    
+        $app->response->headers->set('Content-Type', $kids['photomimetype']);
+        echo $kids['photo'];
+ //   }
+    
+});
+
 // Edit 
 
 $app->get('/edit/:educatorId', function() use ($app) {
