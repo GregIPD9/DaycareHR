@@ -1,3 +1,27 @@
+--- May 16 Andrei
+DID SINCE LAST SCRUM:
+1. Display BLOB photos from DB
+2. Display a list of Educators with Photos
+3. Display a list of Kids with Photos
+4. Implemented a Google Map to show an Address in the new window
+WILL DO IN THE NEXT 24 HOURS
+1. Logout session to assign to "0"
+. Apply some styles for login menu
+WHERE I NEED HELP IS...
+1. BLOB
+
+--- May 16 Gregory
+DID SINCE LAST SCRUM:
+1. Proposal 
+WILL DO IN THE NEXT 24 HOURS
+1. Fill DB with data
+2. Trello add tasks (user cans)
+WHERE I NEED HELP IS...
+1. 
+
+
+
+
 --- May 15 Andrei
 DID SINCE LAST SCRUM:
 1. Create a Main page with Registration and Login forms
