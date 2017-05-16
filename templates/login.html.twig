@@ -4,14 +4,22 @@
 
 {% block content %}
 
+
+
+
+
+<form method="post">
+    <h1> Welcome!</h1>
+<h3>You have to Login</h3>
+    Email:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <input type="email" name="email"><br><br>
+    Password: <input type="password" name="pass"><br><br>
+    <div style="text-align:center;">
+    <input type="submit" value="Login">
+    </div>
 {% if error %}
     <p class="errorList">Login failed try again.</p>
 {% endif %}
 
-<form method="post">
-    Email: <input type="email" name="email"><br>
-    Password: <input type="password" name="pass"><br>
-    <input type="submit" value="Login">
 </form>
 
 {% endblock content %}
