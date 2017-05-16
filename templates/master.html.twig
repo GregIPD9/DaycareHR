@@ -9,15 +9,13 @@
     <body>
         <div id="centerContent">
             <div id="header">
-                {% if daycareuser %}
-                    Welcome {{ daycareuser.name }}, you may <a href="/logout">logout</a>.
-                {% endif %}
+                
             </div>
             <div id="content">
             {% block content %}{% endblock %}
             </div>
             <div id="footer">            
-       &copy; Copyright 2017 by <a href="http://domain.invalid/">Andrei&Greg IPD-9</a>.            
+       &copy; Copyright 2017 by <a href="http://domain.invalid/">Andrei&Greg IPD-9</a>.  &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp    Also, you may logout by clicking <a href="/logout">here</a>.           
             </div>
         </div>
     </body>

@@ -15,13 +15,14 @@ form {
    bottom:0;
    width:100%;
    height:30px;   /* Height of the footer */
-   background:black;
+   background:darkgrey;
 }
 
 .errorList {
     color: red;
+
 }
 
-h1, h3 {
+h1, h3, h5, .errorList, #hr {
    text-align:center;
 }

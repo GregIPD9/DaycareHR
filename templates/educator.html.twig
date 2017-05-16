@@ -1,6 +1,6 @@
 {% extends "master.html.twig" %}
 
-{% block title %}Login successful{% endblock %}
+{% block title %}{{ daycareuser.name }} - {{ daycareuser.position }}{% endblock %}
 {% block headExtra %}
     {% if daycareuser %}
                     <h3>Welcome {{ daycareuser.name }}.</h3><br>
@@ -8,9 +8,13 @@
 {% endblock %}
 
 {% block content %}
-                
-    <h3>You've logged in succesfully.<br>
-    <a href="/{{ daycareuser.position }}"><br>Click here to continue</a>.</h3><br><br>
+    
+    <div id="hr">
+    
+    <input type=button onClick="location.href='listofkids'" value='Our Kids'>
+    </div>
+       
+    
     <h5>You may logout by clicking <a href="/logout">here</a>.</h5>
 
 {% endblock content %}

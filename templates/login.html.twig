@@ -5,21 +5,25 @@
 {% block content %}
 
 
-
-
-
 <form method="post">
     <h1> Welcome!</h1>
 <h3>You have to Login</h3>
-    Email:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <input type="email" name="email"><br><br>
-    Password: <input type="password" name="pass"><br><br>
+    Email:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <input type="email" placeholder="Enter email" name="email"><br><br>
+    Password: <input type="password" placeholder="Enter Password" name="pass">
     <div style="text-align:center;">
-    <input type="submit" value="Login">
-    </div>
-{% if error %}
+        <input type="checkbox" > remember me<br><br>
+        <input type="submit" value="Login">
+
+  </div>
+
+  {% if error %}
     <p class="errorList">Login failed try again.</p>
 {% endif %}
+    
+    </div>
+
 
 </form>
+
 
 {% endblock content %}

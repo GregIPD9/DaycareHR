@@ -69,11 +69,17 @@ $app->get('/ajax/emailused/:email', function($email) {
 
 
 $app->get('/login', function() use ($app) {
+    
     $app->render('login.html.twig');
 });
 
+
+
+
+//LOGOUT
 $app->get('/logout', function() use ($app) {
-    $app->render('logout.html.twig');
+    unset($_SESSION['daycareuser']);
+    $app->render("logout.html.twig");
 });
 
 $app->post('/login', function() use ($app) {
@@ -83,49 +89,52 @@ $app->post('/login', function() use ($app) {
   //  $position = $app->request()->post('position');
     // verification    
     $error = false;
-    $user = DB::queryFirstRow("SELECT * FROM users WHERE email=%s", $email);
-    if (!$user) {
+    $daycareuser = DB::queryFirstRow("SELECT * FROM users WHERE email=%s", $email);
+    if (!$daycareuser) {
         $error = true;
     } else {
-        if ($user['password'] != $pass) {
+        if ($daycareuser['password'] != $pass) {
             $error = true;
         }
     }
     if ($error) {
         $app->render('login.html.twig', array("error" => true));
     } else {
-        unset($user['password']);
-        $_SESSION['daycareuser'] = $user;
+        unset($daycareuser['password']);
+        $_SESSION['daycareuser'] = $daycareuser;
         $app->render('login_success.html.twig');
     }
 });
 
-//LOGOUT
-$app->get('/logout', function() use ($app) {
-    unset($_SESSION['daycareuser']);
-    $app->render("logout.html.twig");
+
+//Director view
+$app->get('/director', function() use ($app) {
+    $app->render("director.html.twig");
 });
 
+//Educator view
+$app->get('/educator', function() use ($app) {
+    $app->render("educator.html.twig");
+});
 
 // List of educators
-
 $app->get('/listofeducators', function() use ($app) {
-  //  if (!$_SESSION['daycareuser']) {
-   //     $app->render('login.html.twig');
-   //     return;
-  //  }
-   // $educatorId = $_SESSION['daycareuser']['id'];
+  if (!$_SESSION['daycareuser']) {
+   $app->render('login.html.twig');
+   return;
+  }
+   //$educatorId = $_SESSION['daycareuser']['id'];
     $educators = DB::query("SELECT educatorId,name,phone,email,groupName,startDate,"
             . "yearlySalary,previousVacation,nextVacation FROM educator");
-    //print_r($todoList);
+ 
     $app->render('listofeducators.html.twig', ['educators' => $educators]);
 });
 
 $app->get('/viewphoto/:educatorId', function($educatorId) use ($app) {
- //   if (!$_SESSION['daycareuser']) {
-  //      $app->render('forbidden.html.twig');
-  //      return;
- //   }
+ if (!$_SESSION['daycareuser']) {
+       $app->render('forbidden.html.twig');
+       return;
+   }
    // $userId = $_SESSION['daycareuser']['id'];
     $educators = DB::queryFirstRow("SELECT photo, photomimetype FROM educator WHERE educatorId=%i", $educatorId);
            /* . " WHERE educatorId=%i" , $userId */
@@ -135,17 +144,15 @@ $app->get('/viewphoto/:educatorId', function($educatorId) use ($app) {
    // } else {    
         $app->response->headers->set('Content-Type', $educators['photomimetype']);
         echo $educators['photo'];
- //   }
-    
+ //   }    
 });
 
 // List of kids
-
 $app->get('/listofkids', function() use ($app) {
-  //  if (!$_SESSION['daycareuser']) {
-   //     $app->render('login.html.twig');
-   //     return;
-  //  }
+    if (!$_SESSION['daycareuser']) {
+       $app->render('login.html.twig');
+        return;
+    }
    // $educatorId = $_SESSION['daycareuser']['id'];
     $kids = DB::query("SELECT kidId,kidName,age,groupName,motherName,motherPhone,address,allergies,notes"
             ." FROM kids");
@@ -153,10 +160,10 @@ $app->get('/listofkids', function() use ($app) {
 });
 
 $app->get('/viewphotokids/:kidId', function($kidId) use ($app) {
- //   if (!$_SESSION['daycareuser']) {
-  //      $app->render('forbidden.html.twig');
-  //      return;
- //   }
+   if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+       return;
+    }
    // $userId = $_SESSION['daycareuser']['id'];
     $kids = DB::queryFirstRow("SELECT photo, photomimetype FROM kids WHERE kidId=%i", $kidId);
            /* . " WHERE educatorId=%i" , $userId */
@@ -166,8 +173,7 @@ $app->get('/viewphotokids/:kidId', function($kidId) use ($app) {
    // } else {    
         $app->response->headers->set('Content-Type', $kids['photomimetype']);
         echo $kids['photo'];
- //   }
-    
+ //   }   
 });
 
 
