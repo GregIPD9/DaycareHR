@@ -12,15 +12,13 @@ WHERE I NEED HELP IS...
 
 --- May 16 Gregory
 DID SINCE LAST SCRUM:
-1. Proposal 
+1. 
 WILL DO IN THE NEXT 24 HOURS
-1. Fill DB with data
-2. Trello add tasks (user cans)
+1. Password recovery
 WHERE I NEED HELP IS...
 1. 
 
-
-
+***************************************************
 
 --- May 15 Andrei
 DID SINCE LAST SCRUM:
@@ -41,6 +39,8 @@ WILL DO IN THE NEXT 24 HOURS
 2. Trello add tasks (user cans)
 WHERE I NEED HELP IS...
 1. 
+
+*********************************************
 
 --- May 12 Andrei
 DID SINCE LAST SCRUM:
