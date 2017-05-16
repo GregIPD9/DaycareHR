@@ -14,9 +14,9 @@ WHERE I NEED HELP IS...
 DID SINCE LAST SCRUM:
 1. 
 WILL DO IN THE NEXT 24 HOURS
-1. Password recovery
+1. Implement add/edit
 WHERE I NEED HELP IS...
-1. 
+1. Password recovery
 
 ***************************************************
 
