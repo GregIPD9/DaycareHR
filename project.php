@@ -102,7 +102,8 @@ $app->post('/login', function() use ($app) {
     } else {
         unset($daycareuser['password']);
         $_SESSION['daycareuser'] = $daycareuser;
-        $app->render('login_success.html.twig');
+        $app->render('login_success.html.twig', 
+                array('daycareuser' => $_SESSION['daycareuser']));
     }
 });
 
