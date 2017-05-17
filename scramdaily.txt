@@ -1,3 +1,24 @@
+--- May 17 Andrei
+DID SINCE LAST SCRUM:
+1. Logout session
+2. Styles to make more User friendly
+WILL DO IN THE NEXT 24 HOURS
+1. Add educator
+2. Add a child
+WHERE I NEED HELP IS...
+1. 
+
+--- May 17 Gregory
+DID SINCE LAST SCRUM:
+1. 
+WILL DO IN THE NEXT 24 HOURS
+1. Implement add/edit
+2. Password recovery
+WHERE I NEED HELP IS...
+1. Password recovery
+
+************************************************
+
 --- May 16 Andrei
 DID SINCE LAST SCRUM:
 1. Display BLOB photos from DB
