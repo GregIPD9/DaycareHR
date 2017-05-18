@@ -6,12 +6,40 @@ session_start();
 
 require_once 'vendor/autoload.php';
 
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+// create a log channel
+$log = new Logger('main');
+$log->pushHandler(new StreamHandler('logs/everything.log', Logger::DEBUG));
+$log->pushHandler(new StreamHandler('logs/errors.log', Logger::ERROR));
+
 //DB::$host = '127.0.0.1';
 DB::$user = 'daycare';
 DB::$password = 'C653TcWF7MGFnuCm'; 
 DB::$dbName = 'daycare';
 DB::$port = 3333;
 DB::$encoding = 'utf8';
+
+DB::$error_handler = 'sql_error_handler';
+DB::$nonsql_error_handler = 'nonsql_error_handler';
+
+function nonsql_error_handler($params) {
+    global $app, $log;
+    $log->error("Database error: " . $params['error']);
+    http_response_code(500);
+    $app->render('error_internal.html.twig');
+    die;
+}
+
+function sql_error_handler($params) {
+    global $app, $log;
+    $log->error("SQL error: " . $params['error']);
+    $log->error(" in query: " . $params['query']);
+    http_response_code(500);
+    $app->render('error_internal.html.twig');
+    die; // don't want to keep going if a query broke
+}
 
 // Slim creation and setup
 $app = new \Slim\Slim(array(
@@ -248,7 +276,7 @@ $app->post('/addchild', function() use ($app) {
     }
     $kids = DB::query("SELECT * FROM kids Where id=%i", $id);
     // extract variables
-    $kidName = $app->request()->post('kidName');
+    $kidName = $app->request()->post(v.kidName);
     $age = $app->request()->post('age');
     $groupName = $app->request()->post('groupName');
     $motherName = $app->request()->post('motherName');
@@ -390,106 +418,54 @@ $app->post('/editchild', function() use ($app) {
     }
 });
 
-// List of comments for kids
-$app->get('/listofkidcomments', function() use ($app) {
-    if (!$_SESSION['daycareuser']) {
-       $app->render('login.html.twig');
-        return;
-    }
-    $kidscomments = DB::query("SELECT kidName,date,comment,commentedBy"
-            ." FROM kidscomment");
-    $app->render('listofkidcomments.html.twig', ['kidscomments' => $kidscomments]);
-});
 
-// List of comments for groups
-$app->get('/listofgroupcomments', function() use ($app) {
-    if (!$_SESSION['daycareuser']) {
-       $app->render('login.html.twig');
-        return;
-    }
-    $groupscomments = DB::query("SELECT groupName,date,comment,commentedBy"
-            ." FROM groupsscomment");
-    $app->render('listofgroupcomments.html.twig', ['groupscomments' => $groupscomments]);
-});
-
-//add comment for kids
-$app->get('/childcomment', function() use ($app) {
-    $app->render('commentforchild.html.twig');
-});
-// Receiving a submission
-$app->post('/childcomment', function() use ($app) {
-    $kidName = $app->request()->post('kidName');
-    $date = $app->request()->post('date');
-    $comment = $app->request()->post('comment');
-    $commentedBy = $app->request()->post('commentedBy');
-    $valueList = array('kidName' => $kidName, 'date' => $date, 'comment' => $comment, 'commentedBy' => $commentedBy );
-   // verify inputs,
-    $errorList = array();
-    if (strlen($kidName) < 2 || strlen($kidName) > 100) {
-        array_push($errorList, "Name must be between 2 and 100 characters");
-    }
-    if (empty($date)) {
-        array_push($errorList, "You must select a valid due date");
-    }
-    if (strlen($comment) < 2 || strlen($comment) > 2000) {
-        array_push($errorList, "Comment must be between 2 and 2000 characters");
-    }
-     if (!$errorList) {
-    // receive data and insert
-        DB::insert('kidscomment', array(
-            'kidName' => $kidName,
-            'date' => $date, 
-            'comment' => $comment, 
-            'commentedBy' => $commentedBy
-        ));
-        $app->render('addcomment_success.html.twig');
-    } else {
-        // TODO: keep values entered on failed submission
-        $app->render('commentforchild.html.twig', array(
-            'v' => $valueList
-         ));
-    }
-});
-
-// add comments for group
-$app->get('/groupcomment', function() use ($app) {
-    $app->render('commentforgroup.html.twig');
-});
-
-// Receiving a submission
-$app->post('/groupcomment', function() use ($app) {
-    $groupName = $app->request()->post('groupName');
-    $date = $app->request()->post('date');
-    $comment = $app->request()->post('comment');
-    $commentedBy = $app->request()->post('commentedBy');
-    $valueList = array('groupName' => $groupName, 'date' => $date, 'comment' => $comment, 'commentedBy' => $commentedBy );
-    $errorList = array();
-   // verify inputs,
-    $errorList = array();
-    if (strlen($groupName) < 2 || strlen($groupName) > 100) {
-        array_push($errorList, "Name must be between 2 and 100 characters");
-    }
-    if (empty($date)) {
-        array_push($errorList, "You must select a valid due date");
-    }
-    if (strlen($comment) < 2 || strlen($comment) > 2000) {
-        array_push($errorList, "Comment must be between 2 and 2000 characters");
-    }
-     if (!$errorList) {
-    // receive data and insert
-        DB::insert('groupscomment', array(
-            'groupName' => $groupName,
-            'date' => $date, 
-            'comment' => $comment, 
-            'commentedBy' => $commentedBy
-        ));
-        $app->render('addcomment_success.html.twig');
-    } else {
-        // TODO: keep values entered on failed submission
-        $app->render('commentforgroup.html.twig', array(
-            'v' => $valueList
-          ));
-    }
-});
+//-----───▄▄▄▄▄▄───────────────
+//-----─▄▀░░░░░░▀▄─────────────
+//-----▐░▄▄▄░░▐▀▌░▌╔══╦══╦╦╦══╗
+//-----▐░░░░░░░░░░▌║╚═╣║║╠╣║══╣
+//-----▐░░▀▄▄▄▄▀░░▌╠═╗║║║║║╚═╗╣
+//-----─▀▄░░▀▀░░▄▀─╚══╩╩╩╩╩══╩╝
+//-----───▀▀▀▀▀▀───────────────
+//*****************************************************
+// Edit  (⊙⊙)(☉_☉)(⊙⊙)
+//                                     ***         ***
+// GREG - this field is for you        ***         ***
+//                                            *     
+//Delete                                     ***
+//                                          *****
+// GREG - this field is for you        **           **
+//                                       ***********
+//                                          * * *
+//                                           ***
+//****************************************************
+//__________________¶________________¶
+//_________________¶¶________________¶¶
+//_______________¶¶¶__________________¶¶¶
+//_____________¶¶¶¶____________________¶¶¶¶
+//____________¶¶¶¶¶____________________¶¶¶¶¶
+//___________¶¶¶¶¶______________________¶¶¶¶¶
+//__________¶¶¶¶¶¶______________________¶¶¶¶¶¶
+//__________¶¶¶¶¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶¶¶¶¶
+//__________¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶
+//___________¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶
+//____________¶¶¶¶¶¶¶¶____¶¶¶¶¶¶____¶¶¶¶¶¶¶¶
+//___¶________¶¶¶¶¶¶¶______¶¶¶¶______¶¶¶¶¶¶¶
+//___¶_______¶¶¶¶¶¶¶¶___O_¶¶¶¶¶__O__¶¶¶¶¶¶¶¶
+//__¶¶¶______¶¶¶¶¶¶¶¶¶____¶¶¶¶¶¶____¶¶¶¶¶¶¶¶¶
+//__¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶
+//_¶¶¶¶¶____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶
+//_¶¶¶¶¶____¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶
+//___¶¶_____¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶
+//___¶¶______¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶_____¶¶
+//____¶¶______¶¶________¶¶¶¶¶¶¶¶¶¶_______¶¶
+//_____¶¶______¶¶¶_______________________¶
+//_____¶¶________¶¶____¶¶¶¶¶¶¶¶¶¶¶______¶
+//______¶¶________¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶__¶
+//_______¶¶__________¶¶¶_____¶¶¶¶¶¶¶¶¶¶
+//_________¶¶___________¶¶¶¶¶__¶¶¶¶¶¶¶¶¶
+//_____________________________¶¶¶¶¶¶¶¶¶¶
+//______________________________¶¶¶¶¶¶¶¶¶
+//_______________________________¶¶¶¶¶¶¶
+//
 // DO NOT DELETE NEXT LINE!!!
 $app->run();
