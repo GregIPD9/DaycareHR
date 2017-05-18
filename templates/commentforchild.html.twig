@@ -1,0 +1,65 @@
+{% extends "master.html.twig" %}
+
+{% block title %}Add a new comment for Child{% endblock %}
+
+{% block content %}
+    
+{% if errorList %}
+    <ul class="errorList">
+        {% for error in errorList %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data">
+    Commented By: <input type="text" name="commentedBy" value="{{v.commentedBy}}"><br>
+    Name of child: <input type="text" name="kidName" value="{{v.kidName}}"><br>
+    Date: <input type="date" name="date" value="{{v.date}}"><br>
+    Comment: <input type="text" name="comment" value="{{v.comment}}"><br>
+    
+    <input type="submit" value="Add comment">
+</form>
+
+{% endblock content %}
+
+<!-- next part I have to move into main Project.PHP file -->
+<?php 
+
+$app->get('/childcomment', function() use ($app) {
+    $app->render('commentforchild.html.twig');
+});
+
+// Receiving a submission
+$app->post('/childcomment', function() use ($app) {
+    $kidName = $app->request()->post('kidName');
+    $date = $app->request()->post('date');
+    $comment = $app->request()->post('comment');
+    $commentedBy = $app->request()->post('commentedBy');
+    $valueList = array('kidName' => $kidName, 'date' => $date, 'comment' => $comment, 'commentedBy' => $commentedBy );
+    $errorList = array();
+   // verify inputs,
+    $errorList = array();
+    if (strlen($kidName) < 2 || strlen($kidName) > 100) {
+        array_push($errorList, "Name must be between 2 and 100 characters");
+    }
+    if (empty($date)) {
+        array_push($errorList, "You must select a valid due date");
+    }
+    if (strlen($comment) < 2 || strlen($comment) > 2000) {
+        array_push($errorList, "Comment must be between 2 and 2000 characters");
+    }
+    // receive data and insert
+        DB::insert('kidscomment', array(
+            'kidName' => $kidName,
+            'date' => $date, 
+            'comment' => $comment, 
+            'commentedBy' => $commentedBy
+        ));
+        $app->render('addcomment_success.html.twig');
+    } else {
+        // TODO: keep values entered on failed submission
+        $app->render('commentforchild.html.twig', array(
+            'v' => $valueList
+        ));
+    });

@@ -1,0 +1,31 @@
+{% extends "master.html.twig" %}
+
+{% block title %}Kid comments list{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>
+            <strong>Kid comments List</strong>
+        </h2>
+            <table border="1">
+                <th>Name</th>
+                <th>Date</th>
+                <th>Comment</th>
+                <th>Commented by</th>
+                
+                    {% for c in kidscomment %}
+                    <tr>
+                        <td>{{ k.kidName }}</td>
+                        <td>{{ k.date }}</td>
+                        <td>{{ k.comment }}</td>
+                        <td>{{ k.commentedBy }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <div>
+                <button type="submit" class="btn btn--right"><a href="/commentforchild" class='btn--no--underline'>Add a new comment for Child</a></button>
+            </div>   
+    </div>
+          
+{% endblock %}
+

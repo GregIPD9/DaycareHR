@@ -1,0 +1,46 @@
+{% extends "master.html.twig" %}
+
+{% block title %}{{ daycareuser.name }} - {{ daycareuser.position }}{% endblock %}
+{% block headExtra %}
+    {% if daycareuser %}
+                    <h3>Congradulations {{ daycareuser.name }}, you've just successfully add a new Comment.</h3><br>
+                {% endif %}
+{% endblock %}
+
+{% block content %}
+    <!-- To fix - display links for comments tables -->
+    <div id="hr">
+    <input type=button onClick="location.href='listofeducators'" value='Our Personal'>
+    
+    <input type=button onClick="location.href='listofkids'" value='Our Kids'>
+    </div>
+       
+    
+    <h5>You may logout by clicking <a href="/logout">here</a>.</h5>
+
+{% endblock content %}
+
+
+<!-- to move it later in Project.php -->
+
+// List of comments for kids
+$app->get('/listofkidcomments', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+       $app->render('login.html.twig');
+        return;
+    }
+    $kidscomments = DB::query("SELECT kidName,date,comment,commentedBy"
+            ." FROM kidscomment");
+    $app->render('listofkidcomments.html.twig', ['kidscomments' => $kidscomments]);
+});
+
+// List of comments for groups
+$app->get('/listofgroupcomments', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+       $app->render('login.html.twig');
+        return;
+    }
+    $groupscomments = DB::query("SELECT groupName,date,comment,commentedBy"
+            ." FROM groupsscomment");
+    $app->render('listofgroupcomments.html.twig', ['groupscomments' => $groupscomments]);
+});
