@@ -10,10 +10,10 @@ WHERE I NEED HELP IS...
 
 --- May 18 Gregory
 DID SINCE LAST SCRUM:
-1. 
+1. Setup at home
 WILL DO IN THE NEXT 24 HOURS
-1. 
-2. 
+1. edit/delete child
+2. edit/delete educator
 WHERE I NEED HELP IS...
 1. 
 
@@ -32,7 +32,7 @@ WHERE I NEED HELP IS...
 
 --- May 17 Gregory
 DID SINCE LAST SCRUM:
-1. 
+1. Setup at home
 WILL DO IN THE NEXT 24 HOURS
 1. Implement add/edit
 2. Password recovery
@@ -55,7 +55,7 @@ WHERE I NEED HELP IS...
 
 --- May 16 Gregory
 DID SINCE LAST SCRUM:
-1. 
+1. Setup at home
 WILL DO IN THE NEXT 24 HOURS
 1. Implement add/edit
 WHERE I NEED HELP IS...

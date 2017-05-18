@@ -246,6 +246,7 @@ $app->post('/addchild', function() use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
+    $kids = DB::query("SELECT * FROM kids Where id=%i", $id);
     // extract variables
     $kidName = $app->request()->post('kidName');
     $age = $app->request()->post('age');
@@ -306,6 +307,84 @@ $app->post('/addchild', function() use ($app) {
         $app->render('addchild_success.html.twig');
     } else {
         $app->render('addchild.html.twig', array(
+            'v' => $valueList
+        ));
+    }
+});
+// EDIT CHILD
+$app->get('/editchild', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $app->render('editchild.html.twig');
+});
+
+$app->post('/editchild', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    // extract variables
+    $kidName = $app->request()->post('kidName');
+    $age = $app->request()->post('age');
+    $groupName = $app->request()->post('groupName');
+    $motherName = $app->request()->post('motherName');
+    $motherPhone = $app->request()->post('motherPhone');
+    $fatherName = $app->request()->post('fatherName');
+    $fatherPhone = $app->request()->post('fatherPhone');
+    $address = $app->request()->post('address');
+    $allergies = $app->request()->post('allergies');
+    $notes = $app->request()->post('notes');
+    $photo = isset($_FILES['photo']) ? $_FILES['photo'] : array();
+   
+    $valueList = array('kidName' => $kidName, 'age' => $age, 'groupName' => $groupName, 'motherName' => $motherName,
+        'motherPhone' => $motherPhone, 'fatherName' => $fatherName,
+        'fatherPhone' => $fatherPhone, 'address' => $address, 'allergies' => $allergies, 'notes' => $notes);
+    // verify inputs,
+    $errorList = array();
+    if (strlen($kidName) < 2 || strlen($kidName) > 100) {
+        array_push($errorList, "Name must be between 2 and 100 characters");
+    }
+    if (strlen($motherName) < 2 || strlen($motherName) > 100) {
+        array_push($errorList, "Name must be between 2 and 100 characters");
+    }
+    if (strlen($fatherName) < 2 || strlen($fatherName) > 100) {
+        array_push($errorList, "Name must be between 2 and 100 characters");
+    }
+    if ($photo) {
+        $imageInfo = getimagesize($photo["tmp_name"]);
+        if (!$imageInfo) {
+            array_push($errorList, "File does not look like an valid image");
+        } else {
+            $width = $imageInfo[0];
+            $height = $imageInfo[1];
+            if ($width > 300 || $height > 300) {
+                array_push($errorList, "Image must at most 300 by 300 pixels");
+            }
+        }
+    }
+    // receive data and insert
+    if (!$errorList) {
+        $imageBinaryData = file_get_contents($photo['tmp_name']);
+        $mimeType = mime_content_type($photo['tmp_name']);
+        DB::insert('kids', array(
+            'kidName' => $kidName,
+            'age' => $age, 
+            'groupName' => $groupName, 
+            'motherName' => $motherName,
+            'motherPhone' => $motherPhone, 
+            'fatherName' => $fatherName,
+            'fatherPhone' => $fatherPhone, 
+            'address' => $address, 
+            'allergies' => $allergies, 
+            'notes' => $notes,
+            'photo' => $imageBinaryData,
+            'photomimetype' => $mimeType
+        ));
+        $app->render('editchild_success.html.twig');
+    } else {
+        $app->render('editchild.html.twig', array(
             'v' => $valueList
         ));
     }
