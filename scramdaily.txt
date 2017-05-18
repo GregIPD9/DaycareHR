@@ -5,6 +5,9 @@ DID SINCE LAST SCRUM:
 WILL DO IN THE NEXT 24 HOURS
 1. Add comments for group
 2. Add comments for kids
+3. Google maps (embedded)
+4. Facebook login
+5. Fix DB constraints
 WHERE I NEED HELP IS...
 1. 
 
@@ -12,8 +15,8 @@ WHERE I NEED HELP IS...
 DID SINCE LAST SCRUM:
 1. Setup at home
 WILL DO IN THE NEXT 24 HOURS
-1. edit/delete child
-2. edit/delete educator
+1. edit/delete child & educator
+2. Password recovery
 WHERE I NEED HELP IS...
 1. 
 
