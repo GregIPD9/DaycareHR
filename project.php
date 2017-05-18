@@ -52,7 +52,7 @@ $app->post('/register', function() use ($app) {
     } else {$user = DB::queryFirstRow("SELECT * FROM users WHERE email=%s", $email);
         if ($user) {array_push($errorList, "Email already in use");}}
     if ($pass1 != $pass2) {
-        array_push($errorList, "Passwors do not match");
+        array_push($errorList, "Passwords do not match");
     } else {
         if (strlen($pass1) < 6) {array_push($errorList, "Password too short, must be 6 characters or longer");} 
         if (preg_match('/[A-Z]/', $pass1) != 1 || preg_match('/[a-z]/', $pass1) != 1 || preg_match('/[0-9]/', $pass1) != 1) {
@@ -67,14 +67,9 @@ $app->get('/ajax/emailused/:email', function($email) {
     echo json_encode($user != null);    
 });
 
-
-$app->get('/login', function() use ($app) {
-    
+$app->get('/login', function() use ($app) {   
     $app->render('login.html.twig');
 });
-
-
-
 
 //LOGOUT
 $app->get('/logout', function() use ($app) {
@@ -83,11 +78,8 @@ $app->get('/logout', function() use ($app) {
 });
 
 $app->post('/login', function() use ($app) {
-   // $name = $app->request()->post('name');
     $email = $app->request()->post('email');
     $pass = $app->request()->post('pass');
-  //  $position = $app->request()->post('position');
-    // verification    
     $error = false;
     $daycareuser = DB::queryFirstRow("SELECT * FROM users WHERE email=%s", $email);
     if (!$daycareuser) {
@@ -107,7 +99,6 @@ $app->post('/login', function() use ($app) {
     }
 });
 
-
 //Director view
 $app->get('/director', function() use ($app) {
     $app->render("director.html.twig");
@@ -124,10 +115,8 @@ $app->get('/listofeducators', function() use ($app) {
    $app->render('login.html.twig');
    return;
   }
-   //$educatorId = $_SESSION['daycareuser']['id'];
     $educators = DB::query("SELECT educatorId,name,phone,email,groupName,startDate,"
             . "yearlySalary,previousVacation,nextVacation FROM educator");
- 
     $app->render('listofeducators.html.twig', ['educators' => $educators]);
 });
 
@@ -136,16 +125,9 @@ $app->get('/viewphoto/:educatorId', function($educatorId) use ($app) {
        $app->render('forbidden.html.twig');
        return;
    }
-   // $userId = $_SESSION['daycareuser']['id'];
-    $educators = DB::queryFirstRow("SELECT photo, photomimetype FROM educator WHERE educatorId=%i", $educatorId);
-           /* . " WHERE educatorId=%i" , $userId */
-   // if (!$educators) {
-     //   $app->response()->status(404);
-     //   echo "404 - not found";
-   // } else {    
+    $educators = DB::queryFirstRow("SELECT photo, photomimetype FROM educator WHERE educatorId=%i", $educatorId);   
         $app->response->headers->set('Content-Type', $educators['photomimetype']);
-        echo $educators['photo'];
- //   }    
+        echo $educators['photo'];   
 });
 
 // List of kids
@@ -154,7 +136,6 @@ $app->get('/listofkids', function() use ($app) {
        $app->render('login.html.twig');
         return;
     }
-   // $educatorId = $_SESSION['daycareuser']['id'];
     $kids = DB::query("SELECT kidId,kidName,age,groupName,motherName,motherPhone,address,allergies,notes"
             ." FROM kids");
     $app->render('listofkids.html.twig', ['kids' => $kids]);
@@ -165,99 +146,219 @@ $app->get('/viewphotokids/:kidId', function($kidId) use ($app) {
         $app->render('forbidden.html.twig');
        return;
     }
-   // $userId = $_SESSION['daycareuser']['id'];
-    $kids = DB::queryFirstRow("SELECT photo, photomimetype FROM kids WHERE kidId=%i", $kidId);
-           /* . " WHERE educatorId=%i" , $userId */
-   // if (!$educators) {
-     //   $app->response()->status(404);
-     //   echo "404 - not found";
-   // } else {    
+    $kids = DB::queryFirstRow("SELECT photo, photomimetype FROM kids WHERE kidId=%i", $kidId); 
         $app->response->headers->set('Content-Type', $kids['photomimetype']);
         echo $kids['photo'];
- //   }   
 });
 
-
-// Edit 
-
-$app->get('/edit/:educatorId', function() use ($app) {
- 
-    $educators = DB::queryFirstRow("SELECT * FROM educator WHERE id=%s", $educatorId);
-    if ($educators != null) {
-        $app->render('edit.html.twig', array(
-            "educatorId" => $educators['educatorId'],
-            "name" => $educators['name'],
-            "phone" => $educators['phone'],
-            "photo" => $educators['photo']
-        ));
-    } else {
-        echo "No educators with this id. ";
-    }   
+// Add an Educator
+$app->get('/addeducator', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $app->render('addeducator.html.twig');
 });
 
-
-$app->post('/edit/:educatorId', function($educatorId) use ($app) {
-    $educatorId = $app->request()->post('educatorId');
+$app->post('/addeducator', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    // extract variables
     $name = $app->request()->post('name');
+    $email = $app->request()->post('email');
     $phone = $app->request()->post('phone');
-    $photo = $app->request()->post('photo');
+    $group = $app->request()->post('groupName');
+    $startdate = $app->request()->post('startDate');
+    $previousVacation = $app->request()->post('previousVacation');
+    $nextVacation = $app->request()->post('nextVacation');
+    $yearlySalary = $app->request()->post('yearlySalary');
+    $photo = isset($_FILES['photo']) ? $_FILES['photo'] : array();
+   
+    $valueList = array('name' => $name, 'email' => $email, 'phone' => $phone, 'groupName' => $group, 
+        'startDate' => $startdate, 'previousVacation' => $previousVacation, 'nextVacation' => $nextVacation,
+        'yearlySalary' => $yearlySalary );
+    // verify inputs,
     $errorList = array();
-    $valueList = array('educatorId' => $educatorId);
-
-    $educators = DB::queryFirstRow("SELECT * FROM educator WHERE educatorId=%s", $educatorId);
-
     if (strlen($name) < 2 || strlen($name) > 100) {
-        array_push($errorList, "name too short or too long");
+        array_push($errorList, "Name must be between 2 and 100 characters");
     }
-
-    if ($errorList) {
-        $app->render('edit.html.twig', array(
+    if (empty($startdate)) {
+        array_push($errorList, "You must select a valid due date");
+    }
+    if (empty($previousVacation)) {
+        array_push($errorList, "You must select a valid due date");
+    }
+    if (empty($nextVacation)) {
+        array_push($errorList, "You must select a valid due date");
+    }
+    if ($photo) {
+        $imageInfo = getimagesize($photo["tmp_name"]);
+        if (!$imageInfo) {
+            array_push($errorList, "File does not look like an valid image");
+        } else {
+            $width = $imageInfo[0];
+            $height = $imageInfo[1];
+            if ($width > 300 || $height > 300) {
+                array_push($errorList, "Image must at most 300 by 300 pixels");
+            }
+        }
+    }
+    // receive data and insert
+    if (!$errorList) {
+        $imageBinaryData = file_get_contents($photo['tmp_name']);
+     //   $ownerId = $_SESSION['daycareuser']['id'];
+        $mimeType = mime_content_type($photo['tmp_name']);
+        DB::insert('educator', array(
+  
+            'name' => $name,
+            'email' => $email, 
+            'phone' => $phone,
+            'groupName' => $group, 
+            'startDate' => $startdate, 
+            'previousVacation' => $previousVacation, 
+            'nextVacation' => $nextVacation,
+            'yearlySalary' => $yearlySalary,
+            'photo' => $imageBinaryData,
+            'photomimetype' => $mimeType
         ));
+        $app->render('addeducator_success.html.twig');
     } else {
-        DB::update('todos', array(
-            "name" => $name,
-            "phone" => $phone,
-            "photo" => $photo
-                ), "educatorId=%s", $educatorId);
-
-        $app->render('edit_success.html.twig', array(
-            "educatorId" => $educatorId,
-             "name" => $name,
-            "phone" => $phone,
-            "photo" => $photo
+        // TODO: keep values entered on failed submission
+        $app->render('addeducator.html.twig', array(
+            'v' => $valueList
         ));
     }
 });
 
-//Delete
+// Add another Child
+$app->get('/addchild', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $app->render('addchild.html.twig');
+});
 
-$app->get('/delete/:educatorId', function($educatorId) use ($app) {
-
-    $educatorId = $_SESSION['daycareuser']['educatorId'];
-    $educators = DB::queryFirstRow("select * FROM educator WHERE educatorId=%s", $educatorId);
-    //echo json_encode($user, JSON_PRETTY_PRINT);
-    if ($educators != null) {
-        $app->render('delete.html.twig', array(
-            "educatorId" => $educators['educatorId'],
-            "name" => $educators['name'],
-            "phone" => $educators['phone'],
-            "photo" => $educators['photo']
+$app->post('/addchild', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    // extract variables
+    $kidName = $app->request()->post('kidName');
+    $age = $app->request()->post('age');
+    $groupName = $app->request()->post('groupName');
+    $motherName = $app->request()->post('motherName');
+    $motherPhone = $app->request()->post('motherPhone');
+    $fatherName = $app->request()->post('fatherName');
+    $fatherPhone = $app->request()->post('fatherPhone');
+    $address = $app->request()->post('address');
+    $allergies = $app->request()->post('allergies');
+    $notes = $app->request()->post('notes');
+    $photo = isset($_FILES['photo']) ? $_FILES['photo'] : array();
+   
+    $valueList = array('kidName' => $kidName, 'age' => $age, 'groupName' => $groupName, 'motherName' => $motherName,
+        'motherPhone' => $motherPhone, 'fatherName' => $fatherName,
+        'fatherPhone' => $fatherPhone, 'address' => $address, 'allergies' => $allergies, 'notes' => $notes);
+    // verify inputs,
+    $errorList = array();
+    if (strlen($kidName) < 2 || strlen($kidName) > 100) {
+        array_push($errorList, "Name must be between 2 and 100 characters");
+    }
+    if (strlen($motherName) < 2 || strlen($motherName) > 100) {
+        array_push($errorList, "Name must be between 2 and 100 characters");
+    }
+    if (strlen($fatherName) < 2 || strlen($fatherName) > 100) {
+        array_push($errorList, "Name must be between 2 and 100 characters");
+    }
+    if ($photo) {
+        $imageInfo = getimagesize($photo["tmp_name"]);
+        if (!$imageInfo) {
+            array_push($errorList, "File does not look like an valid image");
+        } else {
+            $width = $imageInfo[0];
+            $height = $imageInfo[1];
+            if ($width > 300 || $height > 300) {
+                array_push($errorList, "Image must at most 300 by 300 pixels");
+            }
+        }
+    }
+    // receive data and insert
+    if (!$errorList) {
+        $imageBinaryData = file_get_contents($photo['tmp_name']);
+        $mimeType = mime_content_type($photo['tmp_name']);
+        DB::insert('kids', array(
+            'kidName' => $kidName,
+            'age' => $age, 
+            'groupName' => $groupName, 
+            'motherName' => $motherName,
+            'motherPhone' => $motherPhone, 
+            'fatherName' => $fatherName,
+            'fatherPhone' => $fatherPhone, 
+            'address' => $address, 
+            'allergies' => $allergies, 
+            'notes' => $notes,
+            'photo' => $imageBinaryData,
+            'photomimetype' => $mimeType
         ));
+        $app->render('addchild_success.html.twig');
     } else {
-        echo "Not educators with this id. ";
+        $app->render('addchild.html.twig', array(
+            'v' => $valueList
+        ));
     }
 });
 
-$app->post('/delete/:educatorId', function($educatorId) use ($app) {
 
-    $deleteResult = DB::delete('educator', "educatorId=%s", $educatorId);
-    if (!$deleteResult) {
-        
-    } else {
-
-        $app->render('delete_success.html.twig');
-    }
-}
-);
+//-----───▄▄▄▄▄▄───────────────
+//-----─▄▀░░░░░░▀▄─────────────
+//-----▐░▄▄▄░░▐▀▌░▌╔══╦══╦╦╦══╗
+//-----▐░░░░░░░░░░▌║╚═╣║║╠╣║══╣
+//-----▐░░▀▄▄▄▄▀░░▌╠═╗║║║║║╚═╗╣
+//-----─▀▄░░▀▀░░▄▀─╚══╩╩╩╩╩══╩╝
+//-----───▀▀▀▀▀▀───────────────
+//*****************************************************
+// Edit  (⊙⊙)(☉_☉)(⊙⊙)
+//                                     ***         ***
+// GREG - this field is for you        ***         ***
+//                                            *     
+//Delete                                     ***
+//                                          *****
+// GREG - this field is for you        **           **
+//                                       ***********
+//                                          * * *
+//                                           ***
+//****************************************************
+//__________________¶________________¶
+//_________________¶¶________________¶¶
+//_______________¶¶¶__________________¶¶¶
+//_____________¶¶¶¶____________________¶¶¶¶
+//____________¶¶¶¶¶____________________¶¶¶¶¶
+//___________¶¶¶¶¶______________________¶¶¶¶¶
+//__________¶¶¶¶¶¶______________________¶¶¶¶¶¶
+//__________¶¶¶¶¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶¶¶¶¶
+//__________¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶
+//___________¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶
+//____________¶¶¶¶¶¶¶¶____¶¶¶¶¶¶____¶¶¶¶¶¶¶¶
+//___¶________¶¶¶¶¶¶¶______¶¶¶¶______¶¶¶¶¶¶¶
+//___¶_______¶¶¶¶¶¶¶¶___O_¶¶¶¶¶__O__¶¶¶¶¶¶¶¶
+//__¶¶¶______¶¶¶¶¶¶¶¶¶____¶¶¶¶¶¶____¶¶¶¶¶¶¶¶¶
+//__¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶
+//_¶¶¶¶¶____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶
+//_¶¶¶¶¶____¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶
+//___¶¶_____¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶
+//___¶¶______¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶_____¶¶
+//____¶¶______¶¶________¶¶¶¶¶¶¶¶¶¶_______¶¶
+//_____¶¶______¶¶¶_______________________¶
+//_____¶¶________¶¶____¶¶¶¶¶¶¶¶¶¶¶______¶
+//______¶¶________¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶__¶
+//_______¶¶__________¶¶¶_____¶¶¶¶¶¶¶¶¶¶
+//_________¶¶___________¶¶¶¶¶__¶¶¶¶¶¶¶¶¶
+//_____________________________¶¶¶¶¶¶¶¶¶¶
+//______________________________¶¶¶¶¶¶¶¶¶
+//_______________________________¶¶¶¶¶¶¶
 //
+// DO NOT DELETE NEXT LINE!!!
 $app->run();
