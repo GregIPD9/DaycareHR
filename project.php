@@ -390,54 +390,106 @@ $app->post('/editchild', function() use ($app) {
     }
 });
 
+// List of comments for kids
+$app->get('/listofkidcomments', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+       $app->render('login.html.twig');
+        return;
+    }
+    $kidscomments = DB::query("SELECT kidName,date,comment,commentedBy"
+            ." FROM kidscomment");
+    $app->render('listofkidcomments.html.twig', ['kidscomments' => $kidscomments]);
+});
 
-//-----───▄▄▄▄▄▄───────────────
-//-----─▄▀░░░░░░▀▄─────────────
-//-----▐░▄▄▄░░▐▀▌░▌╔══╦══╦╦╦══╗
-//-----▐░░░░░░░░░░▌║╚═╣║║╠╣║══╣
-//-----▐░░▀▄▄▄▄▀░░▌╠═╗║║║║║╚═╗╣
-//-----─▀▄░░▀▀░░▄▀─╚══╩╩╩╩╩══╩╝
-//-----───▀▀▀▀▀▀───────────────
-//*****************************************************
-// Edit  (⊙⊙)(☉_☉)(⊙⊙)
-//                                     ***         ***
-// GREG - this field is for you        ***         ***
-//                                            *     
-//Delete                                     ***
-//                                          *****
-// GREG - this field is for you        **           **
-//                                       ***********
-//                                          * * *
-//                                           ***
-//****************************************************
-//__________________¶________________¶
-//_________________¶¶________________¶¶
-//_______________¶¶¶__________________¶¶¶
-//_____________¶¶¶¶____________________¶¶¶¶
-//____________¶¶¶¶¶____________________¶¶¶¶¶
-//___________¶¶¶¶¶______________________¶¶¶¶¶
-//__________¶¶¶¶¶¶______________________¶¶¶¶¶¶
-//__________¶¶¶¶¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶¶¶¶¶
-//__________¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶
-//___________¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶
-//____________¶¶¶¶¶¶¶¶____¶¶¶¶¶¶____¶¶¶¶¶¶¶¶
-//___¶________¶¶¶¶¶¶¶______¶¶¶¶______¶¶¶¶¶¶¶
-//___¶_______¶¶¶¶¶¶¶¶___O_¶¶¶¶¶__O__¶¶¶¶¶¶¶¶
-//__¶¶¶______¶¶¶¶¶¶¶¶¶____¶¶¶¶¶¶____¶¶¶¶¶¶¶¶¶
-//__¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶
-//_¶¶¶¶¶____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶
-//_¶¶¶¶¶____¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶
-//___¶¶_____¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶
-//___¶¶______¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶_____¶¶
-//____¶¶______¶¶________¶¶¶¶¶¶¶¶¶¶_______¶¶
-//_____¶¶______¶¶¶_______________________¶
-//_____¶¶________¶¶____¶¶¶¶¶¶¶¶¶¶¶______¶
-//______¶¶________¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶__¶
-//_______¶¶__________¶¶¶_____¶¶¶¶¶¶¶¶¶¶
-//_________¶¶___________¶¶¶¶¶__¶¶¶¶¶¶¶¶¶
-//_____________________________¶¶¶¶¶¶¶¶¶¶
-//______________________________¶¶¶¶¶¶¶¶¶
-//_______________________________¶¶¶¶¶¶¶
-//
+// List of comments for groups
+$app->get('/listofgroupcomments', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+       $app->render('login.html.twig');
+        return;
+    }
+    $groupscomments = DB::query("SELECT groupName,date,comment,commentedBy"
+            ." FROM groupsscomment");
+    $app->render('listofgroupcomments.html.twig', ['groupscomments' => $groupscomments]);
+});
+
+//add comment for kids
+$app->get('/childcomment', function() use ($app) {
+    $app->render('commentforchild.html.twig');
+});
+// Receiving a submission
+$app->post('/childcomment', function() use ($app) {
+    $kidName = $app->request()->post('kidName');
+    $date = $app->request()->post('date');
+    $comment = $app->request()->post('comment');
+    $commentedBy = $app->request()->post('commentedBy');
+    $valueList = array('kidName' => $kidName, 'date' => $date, 'comment' => $comment, 'commentedBy' => $commentedBy );
+   // verify inputs,
+    $errorList = array();
+    if (strlen($kidName) < 2 || strlen($kidName) > 100) {
+        array_push($errorList, "Name must be between 2 and 100 characters");
+    }
+    if (empty($date)) {
+        array_push($errorList, "You must select a valid due date");
+    }
+    if (strlen($comment) < 2 || strlen($comment) > 2000) {
+        array_push($errorList, "Comment must be between 2 and 2000 characters");
+    }
+     if (!$errorList) {
+    // receive data and insert
+        DB::insert('kidscomment', array(
+            'kidName' => $kidName,
+            'date' => $date, 
+            'comment' => $comment, 
+            'commentedBy' => $commentedBy
+        ));
+        $app->render('addcomment_success.html.twig');
+    } else {
+        // TODO: keep values entered on failed submission
+        $app->render('commentforchild.html.twig', array(
+            'v' => $valueList
+         ));
+    }
+});
+
+// add comments for group
+$app->get('/groupcomment', function() use ($app) {
+    $app->render('commentforgroup.html.twig');
+});
+
+// Receiving a submission
+$app->post('/groupcomment', function() use ($app) {
+    $groupName = $app->request()->post('groupName');
+    $date = $app->request()->post('date');
+    $comment = $app->request()->post('comment');
+    $commentedBy = $app->request()->post('commentedBy');
+    $valueList = array('groupName' => $groupName, 'date' => $date, 'comment' => $comment, 'commentedBy' => $commentedBy );
+    $errorList = array();
+   // verify inputs,
+    $errorList = array();
+    if (strlen($groupName) < 2 || strlen($groupName) > 100) {
+        array_push($errorList, "Name must be between 2 and 100 characters");
+    }
+    if (empty($date)) {
+        array_push($errorList, "You must select a valid due date");
+    }
+    if (strlen($comment) < 2 || strlen($comment) > 2000) {
+        array_push($errorList, "Comment must be between 2 and 2000 characters");
+    }
+     if (!$errorList) {
+    // receive data and insert
+        DB::insert('groupscomment', array(
+            'groupName' => $groupName,
+            'date' => $date, 
+            'comment' => $comment, 
+            'commentedBy' => $commentedBy
+        ));
+        $app->render('addcomment_success.html.twig');
+    } else {
+        // TODO: keep values entered on failed submission
+        $app->render('commentforgroup.html.twig', array(
+            'v' => $valueList
+          ));
+    }
+});
 // DO NOT DELETE NEXT LINE!!!
 $app->run();
