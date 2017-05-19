@@ -143,17 +143,17 @@ $app->get('/listofeducators', function() use ($app) {
    $app->render('login.html.twig');
    return;
   }
-    $educators = DB::query("SELECT educatorId,name,phone,email,groupName,startDate,"
-            . "yearlySalary,previousVacation,nextVacation FROM educator");
+    $educators = DB::query("SELECT id,name,phone,email,groupName,startDate,"
+            . "yearlySalary,previousVacation,nextVacation FROM educators");
     $app->render('listofeducators.html.twig', ['educators' => $educators]);
 });
 
-$app->get('/viewphoto/:educatorId', function($educatorId) use ($app) {
+$app->get('/viewphoto/:id', function($id) use ($app) {
  if (!$_SESSION['daycareuser']) {
        $app->render('forbidden.html.twig');
        return;
    }
-    $educators = DB::queryFirstRow("SELECT photo, photomimetype FROM educator WHERE educatorId=%i", $educatorId);   
+    $educators = DB::queryFirstRow("SELECT photo, photomimetype FROM educators WHERE id=%i", $id);   
         $app->response->headers->set('Content-Type', $educators['photomimetype']);
         echo $educators['photo'];   
 });
@@ -164,17 +164,17 @@ $app->get('/listofkids', function() use ($app) {
        $app->render('login.html.twig');
         return;
     }
-    $kids = DB::query("SELECT kidId,kidName,age,groupName,motherName,motherPhone,address,allergies,notes"
+    $kids = DB::query("SELECT id,kidName,age,groupName,motherName,motherPhone,address,allergies,notes"
             ." FROM kids");
     $app->render('listofkids.html.twig', ['kids' => $kids]);
 });
 
-$app->get('/viewphotokids/:kidId', function($kidId) use ($app) {
+$app->get('/viewphotokids/:id', function($id) use ($app) {
    if (!$_SESSION['daycareuser']) {
         $app->render('forbidden.html.twig');
        return;
     }
-    $kids = DB::queryFirstRow("SELECT photo, photomimetype FROM kids WHERE kidId=%i", $kidId); 
+    $kids = DB::queryFirstRow("SELECT photo, photomimetype FROM kids WHERE id=%i", $id); 
         $app->response->headers->set('Content-Type', $kids['photomimetype']);
         echo $kids['photo'];
 });
@@ -238,7 +238,7 @@ $app->post('/addeducator', function() use ($app) {
         $imageBinaryData = file_get_contents($photo['tmp_name']);
      //   $ownerId = $_SESSION['daycareuser']['id'];
         $mimeType = mime_content_type($photo['tmp_name']);
-        DB::insert('educator', array(
+        DB::insert('educators', array(
   
             'name' => $name,
             'email' => $email, 
@@ -274,9 +274,8 @@ $app->post('/addchild', function() use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    $kids = DB::query("SELECT * FROM kids Where id=%i", $id);
     // extract variables
-    $kidName = $app->request()->post(v.kidName);
+    $kidName = $app->request()->post('kidName');
     $age = $app->request()->post('age');
     $groupName = $app->request()->post('groupName');
     $motherName = $app->request()->post('motherName');
