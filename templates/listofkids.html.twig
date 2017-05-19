@@ -16,6 +16,7 @@
                 <th>Mother</th>
                 <th>Phone</th>
                 <th>Address</th>
+                <th>Map</th>
                 <th>Notes</th>
                 <th>Edit</th>
                 <th>Delete</th>
@@ -29,8 +30,10 @@
                         <td>{{ k.motherName }}</td>
                         <td>{{ k.motherPhone }}</td>
                         <td class="center"><a href="https://maps.google.com/?q={{ k.address }}" target="_blank">{{ k.address }}</a></td>
-
-                       
+                        <td>
+                            <iframe width="340" height="200" frameborder="0" scrolling="no" marginheight="0" 
+                                    marginwidth="0" src="https://maps.google.ca/maps?q={{ k.address }}
+                                    &output=embed"></iframe></td>
                         <td>{{ k.notes }}</td>
                         <td><a href="/editchild{{e.id}}">edit</a></td>
                         <td><a href="/deletechild{{e.id}}">delete</a></td>
