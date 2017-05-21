@@ -338,16 +338,32 @@ $app->post('/addchild', function() use ($app) {
         ));
     }
 });
-// EDIT CHILD
-$app->get('/editchild', function() use ($app) {
+// EDIT CHILD - Andrei's try    ε(๏̯͡๏)з
+$app->get('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     if (!$_SESSION['daycareuser']) {
         $app->render('forbidden.html.twig');
         return;
     }
-    $app->render('editchild.html.twig');
-});
+   if ($op == 'edit') {
+        $child = DB::queryFirstRow("SELECT * FROM kids WHERE id=%i", $id);
+        if (!$child) {
+            echo 'Child not found';
+            return;
+        }
+        $app->render("editchild.html.twig", array(
+            'v' => $child, 'operation' => 'Update'
+        ));
+    } else {
+        $app->render("editchild.html.twig",
+                array('operation' => 'Add'
+        ));
+    }
+})->conditions(array(
+    'op' => '(add|edit)',
+    'id' => '[0-9]+'));
 
-$app->post('/editchild', function() use ($app) {
+
+$app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     if (!$_SESSION['daycareuser']) {
         $app->render('forbidden.html.twig');
         return;
@@ -364,6 +380,7 @@ $app->post('/editchild', function() use ($app) {
     $allergies = $app->request()->post('allergies');
     $notes = $app->request()->post('notes');
     $photo = isset($_FILES['photo']) ? $_FILES['photo'] : array();
+    //$photo = $_FILES['photo'];
    
     $valueList = array('kidName' => $kidName, 'age' => $age, 'groupName' => $groupName, 'motherName' => $motherName,
         'motherPhone' => $motherPhone, 'fatherName' => $fatherName,
@@ -379,11 +396,23 @@ $app->post('/editchild', function() use ($app) {
     if (strlen($fatherName) < 2 || strlen($fatherName) > 100) {
         array_push($errorList, "Name must be between 2 and 100 characters");
     }
-    if ($photo) {
+    if ($photo['error'] != 0) {
+        array_push($errorList, "Image is required to create a product");
+    } else {
+   
         $imageInfo = getimagesize($photo["tmp_name"]);
         if (!$imageInfo) {
             array_push($errorList, "File does not look like an valid image");
         } else {
+            // FIXME: opened a security hole here! .. must be forbidden
+            if (strstr($photo["name"], "..")) {
+                array_push($errorList, "File name invalid");
+            }
+            // FIXME: only allow select extensions .jpg .gif .png, never .php
+            $ext = strtolower(pathinfo($photo['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, array('jpg', 'jpeg', 'gif', 'png'))) {
+                array_push($errorList, "File name invalid");
+            }
             $width = $imageInfo[0];
             $height = $imageInfo[1];
             if ($width > 300 || $height > 300) {
@@ -393,9 +422,61 @@ $app->post('/editchild', function() use ($app) {
     }
     // receive data and insert
     if (!$errorList) {
-        $imageBinaryData = file_get_contents($photo['tmp_name']);
-        $mimeType = mime_content_type($photo['tmp_name']);
-        DB::insert('kids', array(
+        $app->render("editchild.html.twig", array(
+            'v' => $valueList,
+            "errorList" => $errorList,
+            'operation' => ($op == 'edit' ? 'Edit' : 'Update')
+        ));
+    } else {
+         if ($op == 'edit') {
+             // GREGORY --  EDIT works but if we don't change photo
+             // TRY to play with this PHOTO options, if not do delete and we will ask our PROF
+             // 
+             // DELETE this picture, its just to get your attention!!!
+             // 
+// ________´$$$$`_____________________________,,,_
+//_______´$$$$$$$`_________________________´$$$`
+//________`$$$$$$$`______,,________,,_______´$$$$´
+//_________`$$$$$$$`____´$$`_____´$$`____´$$$$$´
+//__________`$$$$$$$`_´$$$$$`_´$$$$$`__´$$$$$$$´
+//___________`$$$$$$$_$$$$$$$_$$$$$$$_´$$$$$$$´_
+//____________`$$$$$$_$$$$$$$_$$$$$$$`´$$$$$$´_
+//___,,,,,,______`$$$$$$_$$$$$$$_$$$$$$$_$$$$$$´_
+//_´$$$$$`____`$$$$$$_$$$$$$$_$$$$$$$_$$$$$$´_
+//´$$$$$$$$$`´$$$$$$$_$$$$$$$_$$$$$$$_$$$$$´_
+//´$$$$$$$$$$$$$$$$$$_$$$$$$$_$$$$$$$_$$$$$´_
+//___`$$$$$$$$$$$$$$$_$$$$$$$_$$$$$$_$$$$$$´_
+//______`$$$$$$$$$$$$$_$$$$$__$$_$$$$$$_$$´_
+//_______`$$$$$$$$$$$$,___,$$$$,_____,$$$$$´_
+//_________`$$$$$$$$$$$$$$$$$$$$$$$$$$$$$´_
+//__________`$$$$$$$$$$$$$$$$$$$$$$$$$$$´_
+//____________`$$$$$$$$$$$$$$$$$$$$$$$$´_
+//_______________`$$$$$$$$$$$$$$$$$$$$´_
+//
+//                        
+             // unlink('') OLD file - requires select            
+      //    $imageBinaryData = file_get_contents($photo['tmp_name']);
+      //    $mimeType = mime_content_type($photo['tmp_name']);
+       // $imageBinaryData= DB::queryFirstField(
+         //                   'SELECT photo FROM kids WHERE id=%i', $id);
+        //$mimeType = DB::queryFirstField(
+          //                  'SELECT photomimetype FROM kids WHERE id=%i', $id);
+        DB::update('kids', array(
+            'kidName' => $kidName,
+            'age' => $age, 
+            'groupName' => $groupName, 
+            'motherName' => $motherName,
+            'motherPhone' => $motherPhone, 
+            'fatherName' => $fatherName,
+            'fatherPhone' => $fatherPhone, 
+            'address' => $address, 
+            'allergies' => $allergies, 
+            'notes' => $notes,
+           // 'photo' => $imageBinaryData,
+          //  'photomimetype' => $mimeType
+        ), "id=%i", $id);
+        } else {
+            DB::insert('kids', array(
             'kidName' => $kidName,
             'age' => $age, 
             'groupName' => $groupName, 
@@ -409,13 +490,13 @@ $app->post('/editchild', function() use ($app) {
             'photo' => $imageBinaryData,
             'photomimetype' => $mimeType
         ));
+        }
         $app->render('editchild_success.html.twig');
-    } else {
-        $app->render('editchild.html.twig', array(
-            'v' => $valueList
-        ));
-    }
-});
+    } 
+})->conditions(array(
+    'op' => '(add|edit)',
+    'id' => '[0-9]+'));
+
 
 // List of comments for kids
 $app->get('/listofkidcomments', function() use ($app) {

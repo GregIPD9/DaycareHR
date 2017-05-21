@@ -24,7 +24,7 @@
                     <tr>
                         <td>{{ k.kidName }}</td>
                         <td>{{ k.age }}</td>
-                        <td><img src="/viewphotokids/{{k.id}}"</td>
+                        <td><img src="/viewphotokids/{{k.id}}"></td>
                         <td>{{ k.allergies }}</td>
                         <td>{{ k.groupName }}</td>
                         <td>{{ k.motherName }}</td>
@@ -35,8 +35,8 @@
                                     marginwidth="0" src="https://maps.google.ca/maps?q={{ k.address }}
                                     &output=embed"></iframe></td>
                         <td>{{ k.notes }}</td>
-                        <td><a href="/editchild{{e.id}}">edit</a></td>
-                        <td><a href="/deletechild{{e.id}}">delete</a></td>
+                        <td><a href="/editchild/edit/{{k.id}}">edit</a></td>
+                        <td><a href="/deletechild/delete/{{k.id}}">delete</a></td>
                     </tr>
                 {% endfor %}
             </table>
