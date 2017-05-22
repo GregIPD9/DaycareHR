@@ -169,6 +169,17 @@ $app->get('/listofkids', function() use ($app) {
     $app->render('listofkids.html.twig', ['kids' => $kids]);
 });
 
+// List of kids
+$app->get('/editchild/edit/listofkids', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+       $app->render('login.html.twig');
+        return;
+    }
+    $kids = DB::query("SELECT id,kidName,age,groupName,motherName,motherPhone,address,allergies,notes"
+            ." FROM kids");
+    $app->render('listofkids.html.twig', ['kids' => $kids]);
+});
+
 $app->get('/viewphotokids/:id', function($id) use ($app) {
    if (!$_SESSION['daycareuser']) {
         $app->render('forbidden.html.twig');
@@ -347,15 +358,12 @@ $app->get('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
    if ($op == 'edit') {
         $child = DB::queryFirstRow("SELECT * FROM kids WHERE id=%i", $id);
         if (!$child) {
-            echo 'Child not found';
+            echo 'Child not found, you may ADD a new child here:';
+             $app->render('addchild.html.twig');
             return;
         }
         $app->render("editchild.html.twig", array(
             'v' => $child, 'operation' => 'Update'
-        ));
-    } else {
-        $app->render("editchild.html.twig",
-                array('operation' => 'Add'
         ));
     }
 })->conditions(array(
@@ -380,7 +388,7 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     $allergies = $app->request()->post('allergies');
     $notes = $app->request()->post('notes');
     //$photo = isset($_FILES['photo']) ? $_FILES['photo'] : array();
-    $photo = $_FILES['photo'];
+    //$photo = $_FILES['photo'];
    
     $valueList = array('kidName' => $kidName, 'age' => $age, 'groupName' => $groupName, 'motherName' => $motherName,
         'motherPhone' => $motherPhone, 'fatherName' => $fatherName,
@@ -396,7 +404,7 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     if (strlen($fatherName) < 2 || strlen($fatherName) > 100) {
         array_push($errorList, "Name must be between 2 and 100 characters");
     }
-    if ($photo['error'] != 0) {
+    /*if ($photo['error'] != 0) {
         array_push($errorList, "Image is required to create a product");
     } else {
    
@@ -417,32 +425,13 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
                 array_push($errorList, "File name already exists. Will not override.");
             }
         }
-    }
+    } */
     // receive data and insert
     if (!$errorList) {
-        $app->render("editchild.html.twig", array(
-            'v' => $valueList,
-            "errorList" => $errorList,
-            'operation' => ($op == 'edit' ? 'Edit' : 'Update')
-        ));
-    } else {
-        $imagePath = "KidsPhotos/" . $photo['name'];
-        move_uploaded_file($photo["tmp_name"], $imagePath);
-         if ($op == 'edit') {
-             $oldImagePath = DB::queryFirstField(
-                            'SELECT imagePath FROM kids WHERE id=%i', $id);
-            if (($oldImagePath) && file_exists($oldImagePath)) {
-                unlink($oldImagePath);
-             // GREGORY --  EDIT works but if we don't change photo
-             // TRY to play with this PHOTO options, if not do delete and we will ask our PROF
-                      
-             // unlink('') OLD file - requires select            
-      //    $imageBinaryData = file_get_contents($photo['tmp_name']);
-      //    $mimeType = mime_content_type($photo['tmp_name']);
-       // $imageBinaryData= DB::queryFirstField(
-         //                   'SELECT photo FROM kids WHERE id=%i', $id);
-        //$mimeType = DB::queryFirstField(
-          //                  'SELECT photomimetype FROM kids WHERE id=%i', $id);
+       $imageBinaryData= DB::queryFirstField(
+                         'SELECT photo FROM kids WHERE id=%i', $id);
+       $mimeType = DB::queryFirstField(
+                          'SELECT photomimetype FROM kids WHERE id=%i', $id);
         DB::update('kids', array(
             'kidName' => $kidName,
             'age' => $age, 
@@ -453,35 +442,18 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
             'fatherPhone' => $fatherPhone, 
             'address' => $address, 
             'allergies' => $allergies, 
-            'notes' => $notes,
-            "imagePath" => $imagePath
-                    ), "id=%i", $id);
-           // 'photo' => $imageBinaryData,
-          //  'photomimetype' => $mimeType
-       
+            'notes' => $notes,    
+            'photo' => $imageBinaryData,
+            'photomimetype' => $mimeType), "id=%i", $id);
         } else {
-            DB::insert('kids', array(
-            'kidName' => $kidName,
-            'age' => $age, 
-            'groupName' => $groupName, 
-            'motherName' => $motherName,
-            'motherPhone' => $motherPhone, 
-            'fatherName' => $fatherName,
-            'fatherPhone' => $fatherPhone, 
-            'address' => $address, 
-            'allergies' => $allergies, 
-            'notes' => $notes,
-            "imagePath" => $imagePath
-        ));
+             $app->render('addchild.html.twig');
         }
         $app->render('editchild_success.html.twig');
-      }
-   }
 })->conditions(array(
     'op' => '(add|edit)',
     'id' => '[0-9]+'));
 
-//DELETE CHILD
+//DELETE CHILD worked and tested
 $app->get('/deletechild/delete/:id', function($id) use ($app) {
     $child = DB::queryFirstRow("SELECT * FROM kids WHERE id=%i", $id);
     $app->render('delete_child.html.twig', array(
