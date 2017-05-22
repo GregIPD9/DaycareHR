@@ -379,8 +379,8 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     $address = $app->request()->post('address');
     $allergies = $app->request()->post('allergies');
     $notes = $app->request()->post('notes');
-    $photo = isset($_FILES['photo']) ? $_FILES['photo'] : array();
-    //$photo = $_FILES['photo'];
+    //$photo = isset($_FILES['photo']) ? $_FILES['photo'] : array();
+    $photo = $_FILES['photo'];
    
     $valueList = array('kidName' => $kidName, 'age' => $age, 'groupName' => $groupName, 'motherName' => $motherName,
         'motherPhone' => $motherPhone, 'fatherName' => $fatherName,
@@ -413,10 +413,8 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
             if (!in_array($ext, array('jpg', 'jpeg', 'gif', 'png'))) {
                 array_push($errorList, "File name invalid");
             }
-            $width = $imageInfo[0];
-            $height = $imageInfo[1];
-            if ($width > 300 || $height > 300) {
-                array_push($errorList, "Image must at most 300 by 300 pixels");
+            if (file_exists('KidsPhotos/' . $photo['name'])) {
+                array_push($errorList, "File name already exists. Will not override.");
             }
         }
     }
@@ -428,32 +426,16 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
             'operation' => ($op == 'edit' ? 'Edit' : 'Update')
         ));
     } else {
+        $imagePath = "KidsPhotos/" . $photo['name'];
+        move_uploaded_file($photo["tmp_name"], $imagePath);
          if ($op == 'edit') {
+             $oldImagePath = DB::queryFirstField(
+                            'SELECT imagePath FROM kids WHERE id=%i', $id);
+            if (($oldImagePath) && file_exists($oldImagePath)) {
+                unlink($oldImagePath);
              // GREGORY --  EDIT works but if we don't change photo
              // TRY to play with this PHOTO options, if not do delete and we will ask our PROF
-             // 
-             // DELETE this picture, its just to get your attention!!!
-             // 
-// ________´$$$$`_____________________________,,,_
-//_______´$$$$$$$`_________________________´$$$`
-//________`$$$$$$$`______,,________,,_______´$$$$´
-//_________`$$$$$$$`____´$$`_____´$$`____´$$$$$´
-//__________`$$$$$$$`_´$$$$$`_´$$$$$`__´$$$$$$$´
-//___________`$$$$$$$_$$$$$$$_$$$$$$$_´$$$$$$$´_
-//____________`$$$$$$_$$$$$$$_$$$$$$$`´$$$$$$´_
-//___,,,,,,______`$$$$$$_$$$$$$$_$$$$$$$_$$$$$$´_
-//_´$$$$$`____`$$$$$$_$$$$$$$_$$$$$$$_$$$$$$´_
-//´$$$$$$$$$`´$$$$$$$_$$$$$$$_$$$$$$$_$$$$$´_
-//´$$$$$$$$$$$$$$$$$$_$$$$$$$_$$$$$$$_$$$$$´_
-//___`$$$$$$$$$$$$$$$_$$$$$$$_$$$$$$_$$$$$$´_
-//______`$$$$$$$$$$$$$_$$$$$__$$_$$$$$$_$$´_
-//_______`$$$$$$$$$$$$,___,$$$$,_____,$$$$$´_
-//_________`$$$$$$$$$$$$$$$$$$$$$$$$$$$$$´_
-//__________`$$$$$$$$$$$$$$$$$$$$$$$$$$$´_
-//____________`$$$$$$$$$$$$$$$$$$$$$$$$´_
-//_______________`$$$$$$$$$$$$$$$$$$$$´_
-//
-//                        
+                      
              // unlink('') OLD file - requires select            
       //    $imageBinaryData = file_get_contents($photo['tmp_name']);
       //    $mimeType = mime_content_type($photo['tmp_name']);
@@ -472,9 +454,11 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
             'address' => $address, 
             'allergies' => $allergies, 
             'notes' => $notes,
+            "imagePath" => $imagePath
+                    ), "id=%i", $id);
            // 'photo' => $imageBinaryData,
           //  'photomimetype' => $mimeType
-        ), "id=%i", $id);
+       
         } else {
             DB::insert('kids', array(
             'kidName' => $kidName,
@@ -487,15 +471,28 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
             'address' => $address, 
             'allergies' => $allergies, 
             'notes' => $notes,
-            'photo' => $imageBinaryData,
-            'photomimetype' => $mimeType
+            "imagePath" => $imagePath
         ));
         }
         $app->render('editchild_success.html.twig');
-    } 
+      }
+   }
 })->conditions(array(
     'op' => '(add|edit)',
     'id' => '[0-9]+'));
+
+//DELETE CHILD
+$app->get('/deletechild/:id', function($id) use ($app) {
+    $child = DB::queryFirstRow("SELECT * FROM kids WHERE id=%i", $id);
+    $app->render('delete_child.html.twig', array(
+        'v' => $valueList
+    ));
+});
+
+$app->post('/deletechild/:id', function($id) use ($app) {
+    DB::delete('kids', 'id=%i', $id);
+    $app->render('delete_child_success.html.twig');
+});
 
 
 // List of comments for kids

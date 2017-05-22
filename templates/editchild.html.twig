@@ -25,7 +25,9 @@
     Notes: <input type="text" name="notes" value="{{v.notes}}"><br>
     <img src="/viewphotokids/{{v.id}}">
     Photo: <input type="file" name="photo"><br>
-    
+     {% if v.imagePath %}
+            <img width="50" src="/{{v.imagePath}}">
+        {% endif %}
     <input type="submit" value="{{operation}} child">
 </form>
 
