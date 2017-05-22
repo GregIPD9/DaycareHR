@@ -482,14 +482,14 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     'id' => '[0-9]+'));
 
 //DELETE CHILD
-$app->get('/deletechild/:id', function($id) use ($app) {
+$app->get('/deletechild/delete/:id', function($id) use ($app) {
     $child = DB::queryFirstRow("SELECT * FROM kids WHERE id=%i", $id);
     $app->render('delete_child.html.twig', array(
-        'v' => $valueList
+        'v' => $child
     ));
 });
 
-$app->post('/deletechild/:id', function($id) use ($app) {
+$app->post('/deletechild/delete/:id', function($id) use ($app) {
     DB::delete('kids', 'id=%i', $id);
     $app->render('delete_child_success.html.twig');
 });
