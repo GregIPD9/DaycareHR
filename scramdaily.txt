@@ -1,3 +1,27 @@
+--- May 23 Andrei
+DID SINCE LAST SCRUM:
+1. Add comments for group
+2. Add comments for kids
+3. Google maps (embedded)
+4. Password reset
+5. Fix DB constraints
+WILL DO IN THE NEXT 24 HOURS
+1. Style bootstrap
+2. Fix edit photo reload new
+WHERE I NEED HELP IS...
+1. edit photo reload new
+
+--- May 23 Gregory
+DID SINCE LAST SCRUM:
+1. Educator edit/delete/success twig
+WILL DO IN THE NEXT 24 HOURS
+1. Implement Educator edit/delete/success in project.php
+2. Style....
+WHERE I NEED HELP IS...
+1. 
+
+************************************************
+
 --- May 18 Andrei
 DID SINCE LAST SCRUM:
 1. Add educator
