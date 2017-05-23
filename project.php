@@ -181,12 +181,12 @@ $app->get('/editchild/edit/listofkids', function() use ($app) {
 });
 
 // List of kids by group
-$app->get('/listofkids/:id', function($id) use ($app) {
+$app->get('/listofkids/:groupName', function($groupName) use ($app) {
     if (!$_SESSION['daycareuser']) {
        $app->render('login.html.twig');
         return;
     }
-    $kids = DB::query("SELECT * FROM kids WHERE id=%i", $id);
+    $kids = DB::query("SELECT * FROM kids WHERE groupName=%s", $groupName);
     $app->render('listofkids.html.twig', ['kids' => $kids]);
 });
 
