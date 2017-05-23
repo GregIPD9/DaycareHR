@@ -12,11 +12,14 @@
     </ul>
 {% endif %}
 
+<h3>Please fill the form below to add a comment for child.</h3>
+
 <form method="post" enctype="multipart/form-data">
-    Commented By: <input type="text" name="commentedBy" value="{{v.commentedBy}}"><br>
-    Name of child: <input type="text" name="kidName" value="{{v.kidName}}"><br>
+    Commented By: <input type="text" placeholder="Enter your full name here"
+                         name="commentedBy" value="{{v.commentedBy}}"><br>
+    Name of child: <input type="text" placeholder="Enter child name here" name="kidName" value="{{v.kidName}}"><br>
     Date: <input type="date" name="date" value="{{v.date}}"><br>
-    Comment: <input type="text" name="comment" value="{{v.comment}}"><br>
+    Comment: <input type="text" placeholder="Enter your comment here" name="comment" value="{{v.comment}}"><br>
     
     <input type="submit" value="Add comment">
 </form>

@@ -39,6 +39,7 @@
         {% endfor %}
     </ul>
 {% endif %}
+<h3> Register form</h3>
 
 <form method="post">
     Name: <input type="text" name="name"><br>
@@ -46,8 +47,9 @@
         <span id="emailInUse">Email already registered</span><br>
     Password <input type="password" name="pass1"><br>
     Password (repeated) <input type="password" name="pass2"><br>
-    Position: <input type="text" name="position"><br>
-    <input type="submit" value="Register">
+    Position: <input type="text" name="position"><br><br>
+    <div style="text-align:center;">
+        <input type="submit" value="Register"></div>
 </form>
 
 {% endblock content %}

@@ -12,17 +12,19 @@
     </ul>
 {% endif %}
 
+<h3>Please fill the form below to add a new Child.</h3>
+
 <form method="post" enctype="multipart/form-data">
-    Name: <input type="text" name="kidName" value="{{v.kidName}}"><br>
-    Age: <input type="integer" name="age" value="{{v.age}}"><br>
-    Group: <input type="text" name="groupName" value="{{v.groupName}}"><br>
-    Name of Mother: <input type="text" name="motherName" value="{{v.motherName}}"><br>
-    Phone of Mother: <input type="text" name="motherPhone" value="{{v.motherPhone}}"><br>
-    Name of Father: <input type="text" name="fatherName" value="{{v.fatherName}}"><br>
-    Phone of Father: <input type="text" name="fatherPhone" value="{{v.fatherPhone}}"><br>
-    Address: <input type="text" name="address" value="{{v.address}}"><br>
-    Allergies: <input type="text" name="allergies" value="{{v.allergies}}"><br>
-    Notes: <input type="text" name="notes" value="{{v.notes}}"><br>
+    Name: <input type="text" placeholder="Enter a full name here" name="kidName" value="{{v.kidName}}"><br>
+    Age: <input type="integer" placeholder="Enter a full age here" name="age" value="{{v.age}}"><br>
+    Group: <input type="text" placeholder="Enter a name of group here" name="groupName" value="{{v.groupName}}"><br>
+    Name of Mother: <input type="text" placeholder="Enter a full Mother's name" name="motherName" value="{{v.motherName}}"><br>
+    Phone of Mother: <input type="text" placeholder="Enter Mother's phone here" name="motherPhone" value="{{v.motherPhone}}"><br>
+    Name of Father: <input type="text" placeholder="Enter a full Father's name" name="fatherName" value="{{v.fatherName}}"><br>
+    Phone of Father: <input type="text" placeholder="Enter Father's phone here" name="fatherPhone" value="{{v.fatherPhone}}"><br>
+    Address: <input type="text" placeholder="Enter a full address here" name="address" value="{{v.address}}"><br>
+    Allergies: <input type="text" placeholder="Enter notes about allergies" name="allergies" value="{{v.allergies}}"><br>
+    Notes: <input type="text" placeholder="Enter any notes here" name="notes" value="{{v.notes}}"><br>
     Photo: <input type="file" name="photo"><br>
     
     <input type="submit" value="Add child">

@@ -12,15 +12,17 @@
     </ul>
 {% endif %}
 
+<h3>Please fill the form below to add a new Educator.</h3>
+
 <form method="post" enctype="multipart/form-data">
-    Name: <input type="text" name="name" value="{{v.name}}"><br>
-    Email <input type="email" name="email" value="{{v.email}}"><br>
-    Phone: <input type="text" name="phone" value="{{v.phone}}"><br>
-    Group: <input type="text" name="groupName" value="{{v.groupName}}"><br>
+    Name: <input type="text" placeholder="Enter a full name here" name="name" value="{{v.name}}"><br>
+    Email <input type="email" placeholder="Enter valid email here" name="email" value="{{v.email}}"><br>
+    Phone: <input type="text" placeholder="Enter phone number here" name="phone" value="{{v.phone}}"><br>
+    Group: <input type="text" placeholder="Enter name of group here" name="groupName" value="{{v.groupName}}"><br>
     Start date: <input type="date" name="startDate" value="{{v.startDate}}"><br>
     Last Vacation: <input type="date" name="previousVacation" value="{{v.previousVacation}}"><br>
     Next Vacation: <input type="date" name="nextVacation" value="{{v.nextVacation}}"><br>
-    Salary/Year: <input type="integer" name="yearlySalary" value="{{v.yearlySalary}}"><br>
+    Salary/Year: <input type="integer" placeholder="Enter Yearly salary here" name="yearlySalary" value="{{v.yearlySalary}}"><br>
     Photo: <input type="file" name="photo"><br>
     
     <input type="submit" value="Add educator">

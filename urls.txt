@@ -1,0 +1,18 @@
+1. http://localhost:8008/register
+2. http://localhost:8008/login
+3. http://localhost:8008/director
+4. http://localhost:8008/listofeducators
+5. http://localhost:8008/listofkids
+6. http://localhost:8008/listofkidcomments
+7. http://localhost:8008/listofgroupcomments
+8. http://localhost:8008/childcomment
+9. http://localhost:8008/groupcomment
+10.http://localhost:8008/addeducator
+11.http://localhost:8008/addchild
+12.http://localhost:8008/editchild/edit/:id
+13.http://localhost:8008/deletechild/delete/:id
+14.http://localhost:8008/listofkids/:id - show kids by group id
+15.http://localhost:8008/passreset
+16.http://localhost:8008/editeducator/edit/:id - to do
+17.http://localhost:8008/deleteeducator/delete/:id - to do
+18.http://localhost:8008/educator
