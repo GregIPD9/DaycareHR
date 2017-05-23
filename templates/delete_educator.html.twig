@@ -1,3 +1,5 @@
+{% extends "master.html.twig" %}
+
 {% block title %}Delete an Educator{% endblock %}
 
 {% block content %}
@@ -9,10 +11,17 @@
 <form style="display: inline-block" method="post">
         <input type="hidden" name="delete" value="confirmed">
         <input type="submit" value="Yes, delete"></form>
-<p>Name: {{v.kidName}}</p>
-<p>Group: {{v.groupName}}</p>
-<p>Age: {{v.age}}</p>
-<p>Photo: <img src="/viewphotokids/{{v.id}}"></p>
+    
+    Name: <input type="text" name="name" value="{{v.name}}"><br>
+    Email <input type="email" name="email" value="{{v.email}}"><br>
+    Phone: <input type="text" name="phone" value="{{v.phone}}"><br>
+    Group: <input type="text" name="groupName" value="{{v.groupName}}"><br>
+    Start date: <input type="date" name="startDate" value="{{v.startDate}}"><br>
+    Last Vacation: <input type="date" name="previousVacation" value="{{v.previousVacation}}"><br>
+    Next Vacation: <input type="date" name="nextVacation" value="{{v.nextVacation}}"><br>
+    Salary/Year: <input type="integer" name="yearlySalary" value="{{v.yearlySalary}}"><br>
+    
+<p>Photo: <img src="/viewphotoeducators/{{v.id}}"></p>
 
 {% endblock content %}
 
