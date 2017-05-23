@@ -397,8 +397,7 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     $address = $app->request()->post('address');
     $allergies = $app->request()->post('allergies');
     $notes = $app->request()->post('notes');
-    //$photo = isset($_FILES['photo']) ? $_FILES['photo'] : array();
-    //$photo = $_FILES['photo'];
+    $photo = $_FILES['photo'];
    
     $valueList = array('kidName' => $kidName, 'age' => $age, 'groupName' => $groupName, 'motherName' => $motherName,
         'motherPhone' => $motherPhone, 'fatherName' => $fatherName,
@@ -414,7 +413,7 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     if (strlen($fatherName) < 2 || strlen($fatherName) > 100) {
         array_push($errorList, "Name must be between 2 and 100 characters");
     }
-    /*if ($photo['error'] != 0) {
+    if ($photo['error'] != 0) {
         array_push($errorList, "Image is required to create a product");
     } else {
    
@@ -431,18 +430,36 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
             if (!in_array($ext, array('jpg', 'jpeg', 'gif', 'png'))) {
                 array_push($errorList, "File name invalid");
             }
-            if (file_exists('KidsPhotos/' . $photo['name'])) {
-                array_push($errorList, "File name already exists. Will not override.");
-            }
         }
-    } */
+    } 
     // receive data and insert
     if (!$errorList) {
-       $imageBinaryData= DB::queryFirstField(
-                         'SELECT photo FROM kids WHERE id=%i', $id);
-       $mimeType = DB::queryFirstField(
-                          'SELECT photomimetype FROM kids WHERE id=%i', $id);
-        DB::update('kids', array(
+      // $imageBinaryData= DB::queryFirstField(
+      //                  'SELECT photo FROM kids WHERE id=%i', $id);
+      //$mimeType = DB::queryFirstField(
+      //                   'SELECT photomimetype FROM kids WHERE id=%i', $id);
+        $data = array(
+            'kidName' => $kidName,
+            'age' => $age, 
+            'groupName' => $groupName, 
+            'motherName' => $motherName,
+            'motherPhone' => $motherPhone, 
+            'fatherName' => $fatherName,
+            'fatherPhone' => $fatherPhone, 
+            'address' => $address, 
+            'allergies' => $allergies, 
+            'notes' => $notes,    
+          //  'photo' => $imageBinaryData,
+          //  'photomimetype' => $mimeType);
+        
+           );
+        DB::update('kids', $data, "id=%i", $id);
+   // } else { 
+    } if ($photo['error'] == 0) {
+      // if ($photo['error'] == 0) {
+                $imageBinaryData = file_get_contents($photo['tmp_name']);
+                $mimeType = mime_content_type($photo['tmp_name']);
+    $data = array(
             'kidName' => $kidName,
             'age' => $age, 
             'groupName' => $groupName, 
@@ -454,10 +471,14 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
             'allergies' => $allergies, 
             'notes' => $notes,    
             'photo' => $imageBinaryData,
-            'photomimetype' => $mimeType), "id=%i", $id);
-        } else {
-             $app->render('addchild.html.twig');
-        }
+            'photomimetype' => $mimeType);
+       // }
+        DB::update('kids', $data, "id=%i", $id);
+        } 
+
+      //  else {
+      //       $app->render('addchild.html.twig');
+      //  }
         $app->render('editchild_success.html.twig');
 })->conditions(array(
     'op' => '(add|edit)',
