@@ -9,8 +9,8 @@
 9. http://localhost:8008/groupcomment
 10.http://localhost:8008/addeducator
 11.http://localhost:8008/addchild
-12.http://localhost:8008/editchild/edit/:id
-13.http://localhost:8008/deletechild/delete/:id
+12.http://localhost:8008/editchild/edit/:groupName
+13.http://localhost:8008/deletechild/delete/:groupName
 14.http://localhost:8008/listofkids/:id - show kids by group id
 15.http://localhost:8008/passreset
 16.http://localhost:8008/editeducator/edit/:id - to do
