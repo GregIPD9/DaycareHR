@@ -13,7 +13,7 @@
                 <th>Comment</th>
                 <th>Commented by</th>
                 
-                    {% for c in kidscomment %}
+                    {% for k in kidcomments %}
                     <tr>
                         <td>{{ k.kidName }}</td>
                         <td>{{ k.date }}</td>
@@ -23,7 +23,7 @@
                 {% endfor %}
             </table>
             <div>
-                <button type="submit" class="btn btn--right"><a href="/commentforchild" class='btn--no--underline'>Add a new comment for Child</a></button>
+                <button type="submit" class="btn btn--right"><a href="/childcomment" class='btn--no--underline'>Add a new comment for Child</a></button>
             </div>   
     </div>
           
