@@ -1,4 +1,5 @@
 <?php
+
 //// C653TcWF7MGFnuCm
 
 session_cache_limiter(false);
@@ -16,7 +17,7 @@ $log->pushHandler(new StreamHandler('logs/errors.log', Logger::ERROR));
 
 //DB::$host = '127.0.0.1';
 DB::$user = 'daycare';
-DB::$password = 'C653TcWF7MGFnuCm'; 
+DB::$password = 'C653TcWF7MGFnuCm';
 DB::$dbName = 'daycare';
 DB::$port = 3333;
 DB::$encoding = 'utf8';
@@ -54,7 +55,7 @@ $view->parserOptions = array(
 $view->setTemplatesDirectory(dirname(__FILE__) . '/templates');
 
 //pass info to all templates (similar globals)
-if (!isset($_SESSION['daycareuser'])){
+if (!isset($_SESSION['daycareuser'])) {
     $_SESSION['daycareuser'] = array();
 }
 
@@ -77,25 +78,37 @@ $app->post('/register', function() use ($app) {
     $errorList = array();
     if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
         array_push($errorList, "Email is invalid");
-    } else {$user = DB::queryFirstRow("SELECT * FROM users WHERE email=%s", $email);
-        if ($user) {array_push($errorList, "Email already in use");}}
+    } else {
+        $user = DB::queryFirstRow("SELECT * FROM users WHERE email=%s", $email);
+        if ($user) {
+            array_push($errorList, "Email already in use");
+        }
+    }
     if ($pass1 != $pass2) {
         array_push($errorList, "Passwords do not match");
     } else {
-        if (strlen($pass1) < 6) {array_push($errorList, "Password too short, must be 6 characters or longer");} 
+        if (strlen($pass1) < 6) {
+            array_push($errorList, "Password too short, must be 6 characters or longer");
+        }
         if (preg_match('/[A-Z]/', $pass1) != 1 || preg_match('/[a-z]/', $pass1) != 1 || preg_match('/[0-9]/', $pass1) != 1) {
-            array_push($errorList, "Password must contain at least one lowercase, " . "one uppercase letter, and a digit");}}
-    if ($errorList) {$app->render('register.html.twig', array('errorList' => $errorList, 'v' => $valueList));
-    } else { DB::insert('users', array('name' => $name, 'email' => $email, 'password' => $pass1, 'position' => $position));    
-    $app->render('register_success.html.twig');}});
+            array_push($errorList, "Password must contain at least one lowercase, " . "one uppercase letter, and a digit");
+        }
+    }
+    if ($errorList) {
+        $app->render('register.html.twig', array('errorList' => $errorList, 'v' => $valueList));
+    } else {
+        DB::insert('users', array('name' => $name, 'email' => $email, 'password' => $pass1, 'position' => $position));
+        $app->render('register_success.html.twig');
+    }
+});
 
 // AJAX: Is user with this email already registered?
 $app->get('/ajax/emailused/:email', function($email) {
     $user = DB::queryFirstRow("SELECT * FROM users WHERE email=%s", $email);
-    echo json_encode($user != null);    
+    echo json_encode($user != null);
 });
 
-$app->get('/login', function() use ($app) {   
+$app->get('/login', function() use ($app) {
     $app->render('login.html.twig');
 });
 
@@ -122,8 +135,7 @@ $app->post('/login', function() use ($app) {
     } else {
         unset($daycareuser['password']);
         $_SESSION['daycareuser'] = $daycareuser;
-        $app->render('login_success.html.twig', 
-                array('daycareuser' => $_SESSION['daycareuser']));
+        $app->render('login_success.html.twig', array('daycareuser' => $_SESSION['daycareuser']));
     }
 });
 
@@ -139,51 +151,63 @@ $app->get('/educator', function() use ($app) {
 
 // List of educators
 $app->get('/listofeducators', function() use ($app) {
-  if (!$_SESSION['daycareuser']) {
-   $app->render('login.html.twig');
-   return;
-  }
+    if (!$_SESSION['daycareuser']) {
+        $app->render('login.html.twig');
+        return;
+    }
     $educators = DB::query("SELECT id,name,phone,email,groupName,startDate,"
-            . "yearlySalary,previousVacation,nextVacation FROM educators");
+                    . "yearlySalary,previousVacation,nextVacation FROM educators");
     $app->render('listofeducators.html.twig', ['educators' => $educators]);
 });
 
-$app->get('/viewphoto/:id', function($id) use ($app) {
- if (!$_SESSION['daycareuser']) {
-       $app->render('forbidden.html.twig');
-       return;
-   }
-    $educators = DB::queryFirstRow("SELECT photo, photomimetype FROM educators WHERE id=%i", $id);   
-        $app->response->headers->set('Content-Type', $educators['photomimetype']);
-        echo $educators['photo'];   
+// List of educators
+$app->get('/editeducator/edit/listofeducators', function() use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('login.html.twig');
+        return;
+    }
+    $educators = DB::query("SELECT id,name,phone,email,groupName,startDate,"
+                    . "yearlySalary,previousVacation,nextVacation FROM educators");
+    $app->render('listofeducators.html.twig', ['educators' => $educators]);
+});
+
+
+$app->get('/viewphotoeducators/:id', function($id) use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $educators = DB::queryFirstRow("SELECT photo, photomimetype FROM educators WHERE id=%i", $id);
+    $app->response->headers->set('Content-Type', $educators['photomimetype']);
+    echo $educators['photo'];
 });
 
 // List of kids
 $app->get('/listofkids', function() use ($app) {
     if (!$_SESSION['daycareuser']) {
-       $app->render('login.html.twig');
+        $app->render('login.html.twig');
         return;
     }
     $kids = DB::query("SELECT id,kidName,age,groupName,motherName,motherPhone,address,allergies,notes"
-            ." FROM kids");
+                    . " FROM kids");
     $app->render('listofkids.html.twig', ['kids' => $kids]);
 });
 
 // List of kids
 $app->get('/editchild/edit/listofkids', function() use ($app) {
     if (!$_SESSION['daycareuser']) {
-       $app->render('login.html.twig');
+        $app->render('login.html.twig');
         return;
     }
     $kids = DB::query("SELECT id,kidName,age,groupName,motherName,motherPhone,address,allergies,notes"
-            ." FROM kids");
+                    . " FROM kids");
     $app->render('listofkids.html.twig', ['kids' => $kids]);
 });
 
 // List of kids by group
 $app->get('/listofkids/:groupName', function($groupName) use ($app) {
     if (!$_SESSION['daycareuser']) {
-       $app->render('login.html.twig');
+        $app->render('login.html.twig');
         return;
     }
     $kids = DB::query("SELECT * FROM kids WHERE groupName=%s", $groupName);
@@ -191,13 +215,13 @@ $app->get('/listofkids/:groupName', function($groupName) use ($app) {
 });
 
 $app->get('/viewphotokids/:id', function($id) use ($app) {
-   if (!$_SESSION['daycareuser']) {
+    if (!$_SESSION['daycareuser']) {
         $app->render('forbidden.html.twig');
-       return;
+        return;
     }
-    $kids = DB::queryFirstRow("SELECT photo, photomimetype FROM kids WHERE id=%i", $id); 
-        $app->response->headers->set('Content-Type', $kids['photomimetype']);
-        echo $kids['photo'];
+    $kids = DB::queryFirstRow("SELECT photo, photomimetype FROM kids WHERE id=%i", $id);
+    $app->response->headers->set('Content-Type', $kids['photomimetype']);
+    echo $kids['photo'];
 });
 
 // Add an Educator
@@ -214,7 +238,7 @@ $app->post('/addeducator', function() use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    // extract variables
+// extract variables
     $name = $app->request()->post('name');
     $email = $app->request()->post('email');
     $phone = $app->request()->post('phone');
@@ -224,11 +248,11 @@ $app->post('/addeducator', function() use ($app) {
     $nextVacation = $app->request()->post('nextVacation');
     $yearlySalary = $app->request()->post('yearlySalary');
     $photo = isset($_FILES['photo']) ? $_FILES['photo'] : array();
-   
-    $valueList = array('name' => $name, 'email' => $email, 'phone' => $phone, 'groupName' => $group, 
+
+    $valueList = array('name' => $name, 'email' => $email, 'phone' => $phone, 'groupName' => $group,
         'startDate' => $startdate, 'previousVacation' => $previousVacation, 'nextVacation' => $nextVacation,
-        'yearlySalary' => $yearlySalary );
-    // verify inputs,
+        'yearlySalary' => $yearlySalary);
+// verify inputs,
     $errorList = array();
     if (strlen($name) < 2 || strlen($name) > 100) {
         array_push($errorList, "Name must be between 2 and 100 characters");
@@ -254,19 +278,18 @@ $app->post('/addeducator', function() use ($app) {
             }
         }
     }
-    // receive data and insert
+// receive data and insert
     if (!$errorList) {
         $imageBinaryData = file_get_contents($photo['tmp_name']);
-     //   $ownerId = $_SESSION['daycareuser']['id'];
+//   $ownerId = $_SESSION['daycareuser']['id'];
         $mimeType = mime_content_type($photo['tmp_name']);
         DB::insert('educators', array(
-  
             'name' => $name,
-            'email' => $email, 
+            'email' => $email,
             'phone' => $phone,
-            'groupName' => $group, 
-            'startDate' => $startdate, 
-            'previousVacation' => $previousVacation, 
+            'groupName' => $group,
+            'startDate' => $startdate,
+            'previousVacation' => $previousVacation,
             'nextVacation' => $nextVacation,
             'yearlySalary' => $yearlySalary,
             'photo' => $imageBinaryData,
@@ -274,7 +297,7 @@ $app->post('/addeducator', function() use ($app) {
         ));
         $app->render('addeducator_success.html.twig');
     } else {
-        // TODO: keep values entered on failed submission
+// TODO: keep values entered on failed submission
         $app->render('addeducator.html.twig', array(
             'v' => $valueList
         ));
@@ -295,7 +318,7 @@ $app->post('/addchild', function() use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    // extract variables
+// extract variables
     $kidName = $app->request()->post('kidName');
     $age = $app->request()->post('age');
     $groupName = $app->request()->post('groupName');
@@ -307,11 +330,11 @@ $app->post('/addchild', function() use ($app) {
     $allergies = $app->request()->post('allergies');
     $notes = $app->request()->post('notes');
     $photo = isset($_FILES['photo']) ? $_FILES['photo'] : array();
-   
+
     $valueList = array('kidName' => $kidName, 'age' => $age, 'groupName' => $groupName, 'motherName' => $motherName,
         'motherPhone' => $motherPhone, 'fatherName' => $fatherName,
         'fatherPhone' => $fatherPhone, 'address' => $address, 'allergies' => $allergies, 'notes' => $notes);
-    // verify inputs,
+// verify inputs,
     $errorList = array();
     if (strlen($kidName) < 2 || strlen($kidName) > 100) {
         array_push($errorList, "Name must be between 2 and 100 characters");
@@ -334,20 +357,20 @@ $app->post('/addchild', function() use ($app) {
             }
         }
     }
-    // receive data and insert
+// receive data and insert
     if (!$errorList) {
         $imageBinaryData = file_get_contents($photo['tmp_name']);
         $mimeType = mime_content_type($photo['tmp_name']);
         DB::insert('kids', array(
             'kidName' => $kidName,
-            'age' => $age, 
-            'groupName' => $groupName, 
+            'age' => $age,
+            'groupName' => $groupName,
             'motherName' => $motherName,
-            'motherPhone' => $motherPhone, 
+            'motherPhone' => $motherPhone,
             'fatherName' => $fatherName,
-            'fatherPhone' => $fatherPhone, 
-            'address' => $address, 
-            'allergies' => $allergies, 
+            'fatherPhone' => $fatherPhone,
+            'address' => $address,
+            'allergies' => $allergies,
             'notes' => $notes,
             'photo' => $imageBinaryData,
             'photomimetype' => $mimeType
@@ -359,17 +382,20 @@ $app->post('/addchild', function() use ($app) {
         ));
     }
 });
+
+
+// GREG!!! ---->>>> FIX this EDIT CHILD please (as Edit Educator)
 // EDIT CHILD - Andrei's try    ε(๏̯͡๏)з
 $app->get('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     if (!$_SESSION['daycareuser']) {
         $app->render('forbidden.html.twig');
         return;
     }
-   if ($op == 'edit') {
+    if ($op == 'edit') {
         $child = DB::queryFirstRow("SELECT * FROM kids WHERE id=%i", $id);
         if (!$child) {
             echo 'Child not found, you may ADD a new child here:';
-             $app->render('addchild.html.twig');
+            $app->render('addchild.html.twig');
             return;
         }
         $app->render("editchild.html.twig", array(
@@ -386,7 +412,7 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    // extract variables
+// extract variables
     $kidName = $app->request()->post('kidName');
     $age = $app->request()->post('age');
     $groupName = $app->request()->post('groupName');
@@ -398,11 +424,11 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     $allergies = $app->request()->post('allergies');
     $notes = $app->request()->post('notes');
     $photo = $_FILES['photo'];
-   
+
     $valueList = array('kidName' => $kidName, 'age' => $age, 'groupName' => $groupName, 'motherName' => $motherName,
         'motherPhone' => $motherPhone, 'fatherName' => $fatherName,
         'fatherPhone' => $fatherPhone, 'address' => $address, 'allergies' => $allergies, 'notes' => $notes);
-    // verify inputs,
+// verify inputs,
     $errorList = array();
     if (strlen($kidName) < 2 || strlen($kidName) > 100) {
         array_push($errorList, "Name must be between 2 and 100 characters");
@@ -425,71 +451,68 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
             }
         }
     }
-    // receive data and insert
+// receive data and insert
     if (!$errorList) {
-      // $imageBinaryData= DB::queryFirstField(
-      //                  'SELECT photo FROM kids WHERE id=%i', $id);
-      //$mimeType = DB::queryFirstField(
-      //                   'SELECT photomimetype FROM kids WHERE id=%i', $id);
+// $imageBinaryData= DB::queryFirstField(
+//                  'SELECT photo FROM kids WHERE id=%i', $id);
+//$mimeType = DB::queryFirstField(
+//                   'SELECT photomimetype FROM kids WHERE id=%i', $id);
         $data = array(
             'kidName' => $kidName,
-            'age' => $age, 
-            'groupName' => $groupName, 
+            'age' => $age,
+            'groupName' => $groupName,
             'motherName' => $motherName,
-            'motherPhone' => $motherPhone, 
+            'motherPhone' => $motherPhone,
             'fatherName' => $fatherName,
-            'fatherPhone' => $fatherPhone, 
-            'address' => $address, 
-            'allergies' => $allergies, 
-            'notes' => $notes,    
-          //  'photo' => $imageBinaryData,
-          //  'photomimetype' => $mimeType);
-        
-           );
+            'fatherPhone' => $fatherPhone,
+            'address' => $address,
+            'allergies' => $allergies,
+            'notes' => $notes,
+                //  'photo' => $imageBinaryData,
+//  'photomimetype' => $mimeType);
+        );
         DB::update('kids', $data, "id=%i", $id);
-   // } else { 
+// } else { 
     } if ($photo['error'] == 0) {
-      // if ($photo['error'] == 0) {
-                $imageBinaryData = file_get_contents($photo['tmp_name']);
-                $mimeType = mime_content_type($photo['tmp_name']);
-    $data = array(
+// if ($photo['error'] == 0) {
+        $imageBinaryData = file_get_contents($photo['tmp_name']);
+        $mimeType = mime_content_type($photo['tmp_name']);
+        $data = array(
             'kidName' => $kidName,
-            'age' => $age, 
-            'groupName' => $groupName, 
+            'age' => $age,
+            'groupName' => $groupName,
             'motherName' => $motherName,
-            'motherPhone' => $motherPhone, 
+            'motherPhone' => $motherPhone,
             'fatherName' => $fatherName,
-            'fatherPhone' => $fatherPhone, 
-            'address' => $address, 
-            'allergies' => $allergies, 
-            'notes' => $notes,    
+            'fatherPhone' => $fatherPhone,
+            'address' => $address,
+            'allergies' => $allergies,
+            'notes' => $notes,
             'photo' => $imageBinaryData,
             'photomimetype' => $mimeType);
-       // }
+// }
         DB::update('kids', $data, "id=%i", $id);
-        } 
+    }
 
-      //  else {
-      //       $app->render('addchild.html.twig');
-      //  }
-        $app->render('editchild_success.html.twig');
+//  else {
+//       $app->render('addchild.html.twig');
+//  }
+    $app->render('editchild_success.html.twig');
 })->conditions(array(
     'op' => '(add|edit)',
     'id' => '[0-9]+'));
 //
-//
-//
-// EDIT EDUCATORS 
+// EDIT EDUCATORS --->>> Worked and tested
 $app->get('/editeducator/:op(/:id)', function($op, $id = 0) use ($app) {
     if (!$_SESSION['daycareuser']) {
         $app->render('forbidden.html.twig');
         return;
     }
-   if ($op == 'edit') {
+    if ($op == 'edit') {
         $educator = DB::queryFirstRow("SELECT * FROM educators WHERE id=%i", $id);
         if (!$educator) {
             echo 'Educator not found, you may ADD a new educator here:';
-             $app->render('addeducator.html.twig');
+            $app->render('addeducator.html.twig');
             return;
         }
         $app->render("editeducator.html.twig", array(
@@ -506,7 +529,7 @@ $app->post('/editeducator/:op(/:id)', function($op, $id = 0) use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    // extract variables
+// extract variables
     $name = $app->request()->post('name');
     $email = $app->request()->post('email');
     $phone = $app->request()->post('phone');
@@ -516,13 +539,13 @@ $app->post('/editeducator/:op(/:id)', function($op, $id = 0) use ($app) {
     $nextVacation = $app->request()->post('nextVacation');
     $yearlySalary = $app->request()->post('yearlySalary');
     $photo = $_FILES['photo'];
-   
-    $valueList = array('name' => $name, 'email' => $email, 'phone' => $phone, 'groupName' => $group, 
+
+    $valueList = array('name' => $name, 'email' => $email, 'phone' => $phone, 'groupName' => $group,
         'startDate' => $startdate, 'previousVacation' => $previousVacation, 'nextVacation' => $nextVacation,
-        'yearlySalary' => $yearlySalary );
-    // verify inputs,
-     $errorList = array();
-     if (strlen($name) < 2 || strlen($name) > 100) {
+        'yearlySalary' => $yearlySalary);
+// verify inputs,
+    $errorList = array();
+    if (strlen($name) < 2 || strlen($name) > 100) {
         array_push($errorList, "Name must be between 2 and 100 characters");
     }
     if (empty($startdate)) {
@@ -534,75 +557,62 @@ $app->post('/editeducator/:op(/:id)', function($op, $id = 0) use ($app) {
     if (empty($nextVacation)) {
         array_push($errorList, "You must select a valid due date");
     }
-    if ($photo['error'] != 0) {
-        array_push($errorList, "Image is required to create a product");
-    } else {
-   
+    if ($_FILES['photo']['size'] != 0) {
+        if ($photo['error'] != 0) {
+            array_push($errorList, "It seems that it is not a correct Image!");
+        }
         $imageInfo = getimagesize($photo["tmp_name"]);
         if (!$imageInfo) {
             array_push($errorList, "File does not look like an valid image");
         } else {
-            // FIXME: opened a security hole here! .. must be forbidden
             if (strstr($photo["name"], "..")) {
                 array_push($errorList, "File name invalid");
             }
-            // FIXME: only allow select extensions .jpg .gif .png, never .php
             $ext = strtolower(pathinfo($photo['name'], PATHINFO_EXTENSION));
             if (!in_array($ext, array('jpg', 'jpeg', 'gif', 'png'))) {
                 array_push($errorList, "File name invalid");
             }
         }
-    } 
-    // receive data and insert
+    }
     if (!$errorList) {
-      // $imageBinaryData= DB::queryFirstField(
-      //                  'SELECT photo FROM educators WHERE id=%i', $id);
-      //$mimeType = DB::queryFirstField(
-      //                   'SELECT photomimetype FROM educators WHERE id=%i', $id);
-        $data = array(
-            'name' => $name,
-            'email' => $email, 
-            'phone' => $phone,
-            'groupName' => $group, 
-            'startDate' => $startdate, 
-            'previousVacation' => $previousVacation, 
-            'nextVacation' => $nextVacation,
-            'yearlySalary' => $yearlySalary,
-          //  'photo' => $imageBinaryData,
-          //  'photomimetype' => $mimeType);
-        
-           );
-        DB::update('educators', $data, "id=%i", $id);
-   // } else { 
-    } if ($photo['error'] == 0) {
-      // if ($photo['error'] == 0) {
-                $imageBinaryData = file_get_contents($photo['tmp_name']);
-                $mimeType = mime_content_type($photo['tmp_name']);
-    $data = array(
-            'name' => $name,
-            'email' => $email, 
-            'phone' => $phone,
-            'groupName' => $group, 
-            'startDate' => $startdate, 
-            'previousVacation' => $previousVacation, 
-            'nextVacation' => $nextVacation,
-            'yearlySalary' => $yearlySalary,
-            'photo' => $imageBinaryData,
-            'photomimetype' => $mimeType);
-       // }
-        DB::update('educators', $data, "id=%i", $id);
-        } 
-
-      //  else {
-      //       $app->render('addeducator.html.twig');
-      //  }
-        $app->render('editeducator_success.html.twig');
+        if ($_FILES['photo']['size'] == 0) {
+            $data = array(
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'groupName' => $group,
+                'startDate' => $startdate,
+                'previousVacation' => $previousVacation,
+                'nextVacation' => $nextVacation,
+                'yearlySalary' => $yearlySalary);
+            DB::update('educators', $data, "id=%i", $id);
+            $app->render('editeducator_success.html.twig');
+        } else {
+            $imageBinaryData = file_get_contents($photo['tmp_name']);
+            $mimeType = mime_content_type($photo['tmp_name']);
+            $data = array(
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'groupName' => $group,
+                'startDate' => $startdate,
+                'previousVacation' => $previousVacation,
+                'nextVacation' => $nextVacation,
+                'yearlySalary' => $yearlySalary,
+                'photo' => $imageBinaryData,
+                'photomimetype' => $mimeType);
+            DB::update('educators', $data, "id=%i", $id);
+            $app->render('editeducator_success.html.twig');
+        }
+    }else{
+       $app->render('addeducator.html.twig');
+    }
 })->conditions(array(
     'op' => '(add|edit)',
     'id' => '[0-9]+'));
-//
-//
-//
+
+
+
 //DELETE CHILD worked and tested
 $app->get('/deletechild/delete/:id', function($id) use ($app) {
     $child = DB::queryFirstRow("SELECT * FROM kids WHERE id=%i", $id);
@@ -632,22 +642,22 @@ $app->post('/deleteeducator/delete/:id', function($id) use ($app) {
 // List of comments for kids
 $app->get('/listofkidcomments', function() use ($app) {
     if (!$_SESSION['daycareuser']) {
-       $app->render('login.html.twig');
+        $app->render('login.html.twig');
         return;
     }
     $kidcomments = DB::query("SELECT kidName,date,comment,commentedBy"
-            ." FROM kidcomments");
+                    . " FROM kidcomments");
     $app->render('listofkidcomments.html.twig', ['kidcomments' => $kidcomments]);
 });
 
 // List of comments for groups
 $app->get('/listofgroupcomments', function() use ($app) {
     if (!$_SESSION['daycareuser']) {
-       $app->render('login.html.twig');
+        $app->render('login.html.twig');
         return;
     }
     $groupcomments = DB::query("SELECT groupName,date,comment,commentedBy"
-            ." FROM groupcomments");
+                    . " FROM groupcomments");
     $app->render('listofgroupcomments.html.twig', ['groupcomments' => $groupcomments]);
 });
 
@@ -661,8 +671,8 @@ $app->post('/childcomment', function() use ($app) {
     $date = $app->request()->post('date');
     $comment = $app->request()->post('comment');
     $commentedBy = $app->request()->post('commentedBy');
-    $valueList = array('kidName' => $kidName, 'date' => $date, 'comment' => $comment, 'commentedBy' => $commentedBy );
-   // verify inputs,
+    $valueList = array('kidName' => $kidName, 'date' => $date, 'comment' => $comment, 'commentedBy' => $commentedBy);
+// verify inputs,
     $errorList = array();
     if (strlen($kidName) < 2 || strlen($kidName) > 100) {
         array_push($errorList, "Name must be between 2 and 100 characters");
@@ -673,20 +683,20 @@ $app->post('/childcomment', function() use ($app) {
     if (strlen($comment) < 2 || strlen($comment) > 2000) {
         array_push($errorList, "Comment must be between 2 and 2000 characters");
     }
-     if (!$errorList) {
-    // receive data and insert
+    if (!$errorList) {
+// receive data and insert
         DB::insert('kidcomments', array(
             'kidName' => $kidName,
-            'date' => $date, 
-            'comment' => $comment, 
+            'date' => $date,
+            'comment' => $comment,
             'commentedBy' => $commentedBy
         ));
         $app->render('addcomment_success.html.twig');
     } else {
-        // TODO: keep values entered on failed submission
+// TODO: keep values entered on failed submission
         $app->render('commentforchild.html.twig', array(
             'v' => $valueList
-         ));
+        ));
     }
 });
 
@@ -701,9 +711,9 @@ $app->post('/groupcomment', function() use ($app) {
     $date = $app->request()->post('date');
     $comment = $app->request()->post('comment');
     $commentedBy = $app->request()->post('commentedBy');
-    $valueList = array('groupName' => $groupName, 'date' => $date, 'comment' => $comment, 'commentedBy' => $commentedBy );
+    $valueList = array('groupName' => $groupName, 'date' => $date, 'comment' => $comment, 'commentedBy' => $commentedBy);
     $errorList = array();
-   // verify inputs,
+// verify inputs,
     if (strlen($groupName) < 2 || strlen($groupName) > 100) {
         array_push($errorList, "Name must be between 2 and 100 characters");
     }
@@ -713,22 +723,23 @@ $app->post('/groupcomment', function() use ($app) {
     if (strlen($comment) < 2 || strlen($comment) > 2000) {
         array_push($errorList, "Comment must be between 2 and 2000 characters");
     }
-     if (!$errorList) {
-    // receive data and insert
+    if (!$errorList) {
+// receive data and insert
         DB::insert('groupcomments', array(
             'groupName' => $groupName,
-            'date' => $date, 
-            'comment' => $comment, 
+            'date' => $date,
+            'comment' => $comment,
             'commentedBy' => $commentedBy
         ));
         $app->render('addcomment_success.html.twig');
     } else {
-        // TODO: keep values entered on failed submission
+// TODO: keep values entered on failed submission
         $app->render('commentforgroup.html.twig', array(
             'v' => $valueList
-          ));
+        ));
     }
 });
+
 //
 // PASSWOR RESET
 
@@ -743,9 +754,9 @@ function generateRandomString($length = 10) {
 }
 
 $app->map('/passreset', function () use ($app, $log) {
-    // Alternative to cron-scheduled cleanup
-    if (rand(1,1000) == 111) {
-        // TODO: do the cleanup 1 in 1000 accessed to /passreset URL
+// Alternative to cron-scheduled cleanup
+    if (rand(1, 1000) == 111) {
+// TODO: do the cleanup 1 in 1000 accessed to /passreset URL
     }
     if ($app->request()->isGet()) {
         $app->render('passreset.html.twig');
@@ -755,7 +766,7 @@ $app->map('/passreset', function () use ($app, $log) {
         if ($user) {
             $app->render('passreset_success.html.twig');
             $secretToken = generateRandomString(50);
-            // VERSION 1: delete and insert
+// VERSION 1: delete and insert
             /*
               DB::delete('passresets', 'userID=%d', $user['ID']);
               DB::insert('passresets', array(
@@ -763,22 +774,22 @@ $app->map('/passreset', function () use ($app, $log) {
               'secretToken' => $secretToken,
               'expiryDateTime' => date("Y-m-d H:i:s", strtotime("+5 hours"))
               )); */
-            // VERSION 2: insert-update TODO
+// VERSION 2: insert-update TODO
             DB::insertUpdate('passresets', array(
                 'userID' => $user['id'],
                 'secretToken' => $secretToken,
                 'expiryDateTime' => date("Y-m-d H:i:s", strtotime("+5 minutes"))
             ));
-            // email user
+// email user
             $url = 'http://' . $_SERVER['SERVER_NAME'] . '/passreset/' . $secretToken;
             $html = $app->view()->render('email_passreset.html.twig', array(
                 'name' => $user['name'],
                 'url' => $url
             ));
             $headers = "MIME-Version: 1.0\r\n";
-            $headers.= "Content-Type: text/html; charset=UTF-8\r\n";
-            $headers.= "From: Noreply <noreply@ipd8.info>\r\n";
-            $headers.= "To: " . htmlentities($user['name']) . " <" . $email . ">\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $headers .= "From: Noreply <noreply@ipd8.info>\r\n";
+            $headers .= "To: " . htmlentities($user['name']) . " <" . $email . ">\r\n";
 
             mail($email, "Password reset from Daycare", $html, $headers);
             $log->info("Password reset for $email email sent");
@@ -798,13 +809,13 @@ $app->map('/passreset/:secretToken', function($secretToken) use ($app) {
         $app->render('passreset_notfound_expired.html.twig');
         return;
     }
-    //
+//
     if ($app->request()->isGet()) {
         $app->render('passreset_form.html.twig');
     } else {
         $pass1 = $app->request()->post('pass1');
         $pass2 = $app->request()->post('pass2');
-        // TODO: verify password quality and that pass1 matches pass2
+// TODO: verify password quality and that pass1 matches pass2
         $errorList = array();
         $msg = verifyPassword($pass1);
         if ($msg !== TRUE) {
@@ -812,19 +823,19 @@ $app->map('/passreset/:secretToken', function($secretToken) use ($app) {
         } else if ($pass1 != $pass2) {
             array_push($errorList, "Passwords don't match");
         }
-        //
+//
         if ($errorList) {
             $app->render('passreset_form.html.twig', array(
                 'errorList' => $errorList
             ));
         } else {
-            // success - reset the password
+// success - reset the password
             DB::update('users', array(
                 'password' => password_hash($pass1, CRYPT_BLOWFISH)
                     ), "id=%d", $row['userID']);
-            DB::delete('passresets','secretToken=%s', $secretToken);
+            DB::delete('passresets', 'secretToken=%s', $secretToken);
             $app->render('passreset_form_success.html.twig');
-            $log->info("Password reset completed for " . $row['email'] . " uid=". $row['userID']);
+            $log->info("Password reset completed for " . $row['email'] . " uid=" . $row['userID']);
         }
     }
 })->via('GET', 'POST');
@@ -834,15 +845,15 @@ $app->get('/scheduled/daily', function() use ($app, $log) {
     DB::$error_handler = FALSE;
     DB::$throw_exception_on_error = TRUE;
     $log->debug("Daily scheduler run started");
-    // 1. clean up old password reset requests
+// 1. clean up old password reset requests
     try {
-        DB::delete('passresets', "expiryDateTime < NOW()");    
+        DB::delete('passresets', "expiryDateTime < NOW()");
         $log->debug("Password resets clean up, removed " . DB::affectedRows());
     } catch (MeekroDBException $e) {
         sql_error_handler(array(
-                    'error' => $e->getMessage(),
-                    'query' => $e->getQuery()
-                ));
+            'error' => $e->getMessage(),
+            'query' => $e->getQuery()
+        ));
     }
     $log->debug("Daily scheduler run completed");
     echo "Completed";

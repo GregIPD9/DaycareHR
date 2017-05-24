@@ -24,15 +24,15 @@
                     <tr>
                         <td>{{ e.name }}</td>
                         <td>{{ e.phone }}</td>
-                        <td><img src="/viewphoto/{{e.id}}"</td>
+                        <td><img src="/viewphotoeducators/{{e.id}}"</td>
                         <td>{{ e.email }}</td>
                         <td>{{ e.groupName }}</td>
                         <td>{{ e.startDate }}</td>
                         <td>{{ e.yearlySalary }}</td>
                         <td>{{ e.previousVacation }}</td>
                         <td>{{ e.nextVacation }}</td>
-                        <td><a href="/edit/{{e.id}}">edit</a></td>
-                        <td><a href="/delete/{{e.id}}">delete</a></td>
+                        <td><a href="/editeducator/edit/{{e.id}}">edit</a></td>
+                        <td><a href="/deleteeducator/delete/{{e.id}}">delete</a></td>
                     </tr>
                 {% endfor %}
             </table>
