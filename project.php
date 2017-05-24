@@ -413,25 +413,18 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     if (strlen($fatherName) < 2 || strlen($fatherName) > 100) {
         array_push($errorList, "Name must be between 2 and 100 characters");
     }
-    if ($photo['error'] != 0) {
-        array_push($errorList, "Image is required to create a product");
-    } else {
-   
+    if ($photo) {
         $imageInfo = getimagesize($photo["tmp_name"]);
         if (!$imageInfo) {
             array_push($errorList, "File does not look like an valid image");
         } else {
-            // FIXME: opened a security hole here! .. must be forbidden
-            if (strstr($photo["name"], "..")) {
-                array_push($errorList, "File name invalid");
-            }
-            // FIXME: only allow select extensions .jpg .gif .png, never .php
-            $ext = strtolower(pathinfo($photo['name'], PATHINFO_EXTENSION));
-            if (!in_array($ext, array('jpg', 'jpeg', 'gif', 'png'))) {
-                array_push($errorList, "File name invalid");
+            $width = $imageInfo[0];
+            $height = $imageInfo[1];
+            if ($width > 300 || $height > 300) {
+                array_push($errorList, "Image must at most 300 by 300 pixels");
             }
         }
-    } 
+    }
     // receive data and insert
     if (!$errorList) {
       // $imageBinaryData= DB::queryFirstField(
@@ -483,7 +476,133 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
 })->conditions(array(
     'op' => '(add|edit)',
     'id' => '[0-9]+'));
+//
+//
+//
+// EDIT EDUCATORS 
+$app->get('/editeducator/:op(/:id)', function($op, $id = 0) use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+   if ($op == 'edit') {
+        $educator = DB::queryFirstRow("SELECT * FROM educators WHERE id=%i", $id);
+        if (!$educator) {
+            echo 'Educator not found, you may ADD a new educator here:';
+             $app->render('addeducator.html.twig');
+            return;
+        }
+        $app->render("editeducator.html.twig", array(
+            'v' => $educator, 'operation' => 'Update'
+        ));
+    }
+})->conditions(array(
+    'op' => '(add|edit)',
+    'id' => '[0-9]+'));
 
+
+$app->post('/editeducator/:op(/:id)', function($op, $id = 0) use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    // extract variables
+    $name = $app->request()->post('name');
+    $email = $app->request()->post('email');
+    $phone = $app->request()->post('phone');
+    $group = $app->request()->post('groupName');
+    $startdate = $app->request()->post('startDate');
+    $previousVacation = $app->request()->post('previousVacation');
+    $nextVacation = $app->request()->post('nextVacation');
+    $yearlySalary = $app->request()->post('yearlySalary');
+    $photo = $_FILES['photo'];
+   
+    $valueList = array('name' => $name, 'email' => $email, 'phone' => $phone, 'groupName' => $group, 
+        'startDate' => $startdate, 'previousVacation' => $previousVacation, 'nextVacation' => $nextVacation,
+        'yearlySalary' => $yearlySalary );
+    // verify inputs,
+     $errorList = array();
+     if (strlen($name) < 2 || strlen($name) > 100) {
+        array_push($errorList, "Name must be between 2 and 100 characters");
+    }
+    if (empty($startdate)) {
+        array_push($errorList, "You must select a valid due date");
+    }
+    if (empty($previousVacation)) {
+        array_push($errorList, "You must select a valid due date");
+    }
+    if (empty($nextVacation)) {
+        array_push($errorList, "You must select a valid due date");
+    }
+    if ($photo['error'] != 0) {
+        array_push($errorList, "Image is required to create a product");
+    } else {
+   
+        $imageInfo = getimagesize($photo["tmp_name"]);
+        if (!$imageInfo) {
+            array_push($errorList, "File does not look like an valid image");
+        } else {
+            // FIXME: opened a security hole here! .. must be forbidden
+            if (strstr($photo["name"], "..")) {
+                array_push($errorList, "File name invalid");
+            }
+            // FIXME: only allow select extensions .jpg .gif .png, never .php
+            $ext = strtolower(pathinfo($photo['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, array('jpg', 'jpeg', 'gif', 'png'))) {
+                array_push($errorList, "File name invalid");
+            }
+        }
+    } 
+    // receive data and insert
+    if (!$errorList) {
+      // $imageBinaryData= DB::queryFirstField(
+      //                  'SELECT photo FROM educators WHERE id=%i', $id);
+      //$mimeType = DB::queryFirstField(
+      //                   'SELECT photomimetype FROM educators WHERE id=%i', $id);
+        $data = array(
+            'name' => $name,
+            'email' => $email, 
+            'phone' => $phone,
+            'groupName' => $group, 
+            'startDate' => $startdate, 
+            'previousVacation' => $previousVacation, 
+            'nextVacation' => $nextVacation,
+            'yearlySalary' => $yearlySalary,
+          //  'photo' => $imageBinaryData,
+          //  'photomimetype' => $mimeType);
+        
+           );
+        DB::update('educators', $data, "id=%i", $id);
+   // } else { 
+    } if ($photo['error'] == 0) {
+      // if ($photo['error'] == 0) {
+                $imageBinaryData = file_get_contents($photo['tmp_name']);
+                $mimeType = mime_content_type($photo['tmp_name']);
+    $data = array(
+            'name' => $name,
+            'email' => $email, 
+            'phone' => $phone,
+            'groupName' => $group, 
+            'startDate' => $startdate, 
+            'previousVacation' => $previousVacation, 
+            'nextVacation' => $nextVacation,
+            'yearlySalary' => $yearlySalary,
+            'photo' => $imageBinaryData,
+            'photomimetype' => $mimeType);
+       // }
+        DB::update('educators', $data, "id=%i", $id);
+        } 
+
+      //  else {
+      //       $app->render('addeducator.html.twig');
+      //  }
+        $app->render('editeducator_success.html.twig');
+})->conditions(array(
+    'op' => '(add|edit)',
+    'id' => '[0-9]+'));
+//
+//
+//
 //DELETE CHILD worked and tested
 $app->get('/deletechild/delete/:id', function($id) use ($app) {
     $child = DB::queryFirstRow("SELECT * FROM kids WHERE id=%i", $id);
@@ -497,6 +616,18 @@ $app->post('/deletechild/delete/:id', function($id) use ($app) {
     $app->render('delete_child_success.html.twig');
 });
 
+//DELETE EDUCATOR
+$app->get('/deleteeducator/delete/:id', function($id) use ($app) {
+    $educator = DB::queryFirstRow("SELECT * FROM educators WHERE id=%i", $id);
+    $app->render('delete_educator.html.twig', array(
+        'v' => $educator
+    ));
+});
+
+$app->post('/deleteeducator/delete/:id', function($id) use ($app) {
+    DB::delete('educators', 'id=%i', $id);
+    $app->render('delete_educator_success.html.twig');
+});
 
 // List of comments for kids
 $app->get('/listofkidcomments', function() use ($app) {
