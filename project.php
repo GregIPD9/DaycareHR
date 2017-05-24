@@ -439,25 +439,27 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     if (strlen($fatherName) < 2 || strlen($fatherName) > 100) {
         array_push($errorList, "Name must be between 2 and 100 characters");
     }
-    if ($photo) {
+    if ($_FILES['photo']['size'] != 0) {
+        if ($photo['error'] != 0) {
+            array_push($errorList, "It seems that it is not a correct Image!");
+        }
         $imageInfo = getimagesize($photo["tmp_name"]);
         if (!$imageInfo) {
             array_push($errorList, "File does not look like an valid image");
         } else {
-            $width = $imageInfo[0];
-            $height = $imageInfo[1];
-            if ($width > 300 || $height > 300) {
-                array_push($errorList, "Image must at most 300 by 300 pixels");
+            if (strstr($photo["name"], "..")) {
+                array_push($errorList, "File name invalid");
+            }
+            $ext = strtolower(pathinfo($photo['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, array('jpg', 'jpeg', 'gif', 'png'))) {
+                array_push($errorList, "File name invalid");
             }
         }
     }
 // receive data and insert
     if (!$errorList) {
-// $imageBinaryData= DB::queryFirstField(
-//                  'SELECT photo FROM kids WHERE id=%i', $id);
-//$mimeType = DB::queryFirstField(
-//                   'SELECT photomimetype FROM kids WHERE id=%i', $id);
-        $data = array(
+       if ($_FILES['photo']['size'] == 0) {
+          $data = array(
             'kidName' => $kidName,
             'age' => $age,
             'groupName' => $groupName,
@@ -467,14 +469,10 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
             'fatherPhone' => $fatherPhone,
             'address' => $address,
             'allergies' => $allergies,
-            'notes' => $notes,
-                //  'photo' => $imageBinaryData,
-//  'photomimetype' => $mimeType);
-        );
+            'notes' => $notes);
         DB::update('kids', $data, "id=%i", $id);
-// } else { 
-    } if ($photo['error'] == 0) {
-// if ($photo['error'] == 0) {
+        $app->render('editchild_success.html.twig');
+    } else { 
         $imageBinaryData = file_get_contents($photo['tmp_name']);
         $mimeType = mime_content_type($photo['tmp_name']);
         $data = array(
@@ -490,14 +488,12 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
             'notes' => $notes,
             'photo' => $imageBinaryData,
             'photomimetype' => $mimeType);
-// }
         DB::update('kids', $data, "id=%i", $id);
+        $app->render('editchild_success.html.twig');
     }
-
-//  else {
-//       $app->render('addchild.html.twig');
-//  }
-    $app->render('editchild_success.html.twig');
+    }else{
+       $app->render('addchild.html.twig');
+    }
 })->conditions(array(
     'op' => '(add|edit)',
     'id' => '[0-9]+'));
