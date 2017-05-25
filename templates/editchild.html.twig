@@ -11,8 +11,8 @@
         {% endfor %}
     </ul>
 {% endif %}
-
-<form method="post" enctype="multipart/form-data">
+<div class="wrap" >
+<form method="post" id="form2" enctype="multipart/form-data">
     Name: <input type="text" name="kidName" value="{{v.kidName}}"><br>
     Age: <input type="integer" name="age" value="{{v.age}}"><br>
     Group: <input type="text" name="groupName" value="{{v.groupName}}"><br>
@@ -27,5 +27,5 @@
     <input type="file" name="photo"><br>
     <input type="submit" value="{{operation}} child">
 </form>
-
+</div>
 {% endblock content %}

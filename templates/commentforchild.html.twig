@@ -3,7 +3,8 @@
 {% block title %}Add a new comment for Child{% endblock %}
 
 {% block content %}
-    
+    <div class="wrap2" >
+        <div id="form2">
 {% if errorList %}
     <ul class="errorList">
         {% for error in errorList %}
@@ -23,6 +24,6 @@
     
     <input type="submit" value="Add comment">
 </form>
-
+</div></div>
 {% endblock content %}
 

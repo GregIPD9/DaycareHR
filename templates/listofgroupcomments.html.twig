@@ -3,10 +3,13 @@
 {% block title %}Group comments list{% endblock %}
 
 {% block content %}
-    <div>
+    <div class="wrap2" >
         <h2>
             <strong>Group comments List</strong>
         </h2>
+         <div>
+                 <a href="/groupcomment" class="button">Add a new comment for Group</a>
+            </div>
             <table border="1">
                 <th>Group</th>
                 <th>Date</th>
@@ -22,9 +25,7 @@
                     </tr>
                 {% endfor %}
             </table>
-            <div>
-                <button type="submit" class="btn btn--right"><a href="/groupcomment" class='btn--no--underline'>Add a new comment for Group</a></button>
-            </div>   
+             
     </div>
           
 {% endblock %}

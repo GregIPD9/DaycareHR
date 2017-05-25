@@ -4,13 +4,18 @@
 
 {% block content %}
     
-<p> Are you sure you want to delete this Educator?</p>
-    <form style="display: inline-block" action="/listofeducators">
-        <input type="submit" value="Cancel"></form>
 
-<form style="display: inline-block" method="post">
-        <input type="hidden" name="delete" value="confirmed">
-        <input type="submit" value="Yes, delete"></form>
+<div class="wrap" >
+<div id="form2">
+    
+<p> Are you sure you want to delete this Educator?</p>    
+    
+        
+    <form style="display: inline-block" action="/listofeducators">
+              <input type="submit" value="Cancel"></form>
+        <form style="display: inline-block" method="post">
+              <input type="hidden" name="delete" value="confirmed">
+              <input type="submit" value="Yes, delete"></form><br>
     
     Name: <input type="text" name="name" value="{{v.name}}"><br>
     Email <input type="email" name="email" value="{{v.email}}"><br>
@@ -23,5 +28,8 @@
     
 <p>Photo: <img src="/viewphotoeducators/{{v.id}}"></p>
 
+
+
+</div></div>
 {% endblock content %}
 

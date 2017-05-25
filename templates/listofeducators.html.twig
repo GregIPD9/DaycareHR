@@ -3,11 +3,13 @@
 {% block title %}Educators list{% endblock %}
 
 {% block content %}
-    <div>
+    <div class="wrap2" >
         <h2>
             <strong>Educators List</strong>
         </h2>
-        
+        <div>
+            <a href="/addeducator" class="button">Add new Educator</a>
+            </div>
             <table border="1">
                 <th>Name</th>
                 <th>Phone</th>
@@ -36,10 +38,8 @@
                     </tr>
                 {% endfor %}
             </table>
-            <div>
-                <button type="submit" class="btn btn--right"><a href="/addeducator" class='btn--no--underline'>Add Educator</a></button>
-            </div>
-         
-    </div>
+            
 
+    </div>
+    </div>
 {% endblock %}

@@ -3,19 +3,23 @@
 {% block title %}Delete a Child{% endblock %}
 
 {% block content %}
-    
-<h3> Are you sure you want to delete this Child?</h3>
-    
+<div class="wrap" >
+<div id="form2">
 
-<form method="post" enctype="multipart/form-data">     
-<p>Name: {{v.kidName}}</p>
-<p>Group: {{v.groupName}}</p>
-<p>Age: {{v.age}}</p>
+<h3> Are you sure you want to delete this Child?</h3>   
+
+
+        <form style="display: inline-block" action="/listofkids">
+              <input type="submit" value="Cancel"></form>
+        <form style="display: inline-block" method="post">
+              <input type="hidden" name="delete" value="confirmed">
+              <input type="submit" value="Yes, delete"></form><br>
+
+
+Name: <input type="text" name="name" value="{{v.kidName}}"><br>
+Group: <input type="text" name="groupName" value="{{v.groupName}}"><br>
+Age: <input type="integer" name="age" value="{{v.age}}"><br>
 <p>Photo: <img src="/viewphotokids/{{v.id}}"></p>
-</form><br>
-<form style="display: inline-block" action="/listofkids">
-        <input type="submit" value="Cancel">
-        <input type="hidden" name="delete" value="confirmed">
-        <input type="submit" value="Yes, delete">
-</form>
+</div>
+</div>
 {% endblock content %}

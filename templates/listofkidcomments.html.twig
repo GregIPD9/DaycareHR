@@ -3,10 +3,14 @@
 {% block title %}Kid comments list{% endblock %}
 
 {% block content %}
-    <div>
+   <div class="wrap2" >
         <h2>
             <strong>Kid comments List</strong>
         </h2>
+       <div>
+                 <a href="/childcomment" class="button">Add a new comment for Child</a>
+            </div>
+       
             <table border="1">
                 <th>Name</th>
                 <th>Date</th>
@@ -22,9 +26,7 @@
                     </tr>
                 {% endfor %}
             </table>
-            <div>
-                <button type="submit" class="btn btn--right"><a href="/childcomment" class='btn--no--underline'>Add a new comment for Child</a></button>
-            </div>   
+               
     </div>
           
 {% endblock %}

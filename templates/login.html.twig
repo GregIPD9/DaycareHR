@@ -4,26 +4,32 @@
 
 {% block content %}
 
+  
 
-<form method="post">
+<form method="post" id="form1">
     <h1> Welcome!</h1>
 <h3>You have to Login</h3>
-    Email:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <input type="email" placeholder="Enter email" name="email"><br><br>
-    Password: <input type="password" placeholder="Enter Password" name="pass">
+Email:  <br><input type="email" placeholder="Enter email" name="email"><br><br>
+Password: <br><input type="password" placeholder="Enter Password" name="pass">
+
     <div style="text-align:center;">
         <input type="checkbox" > remember me<br><br>
         <input type="submit" value="Login">
-<p>If you forgot your password you can <a href="/passreset">reset it</a>.</p>
-  </div>
+    </div>
 
-  {% if error %}
+<p>If you forgot your password <br>you can <a href="/passreset">reset it</a>.</p>
+
+{% if error %}
     <p class="errorList">Login failed try again.</p>
 {% endif %}
+
+
+</form>
     
   
 
 
-</form>
+
 
 
 {% endblock content %}

@@ -11,8 +11,8 @@
         {% endfor %}
     </ul>
 {% endif %}
-
-<form method="post" enctype="multipart/form-data">
+<div class="wrap" >
+<form method="post" id="form2" enctype="multipart/form-data">
     Name: <input type="text" name="name" value="{{v.name}}"><br>
     Email: <input type="text" name="email" value="{{v.email}}"><br>
     Phone : <input type="text" name="phone" value="{{v.phone}}"><br>
@@ -25,5 +25,5 @@
      <input type="file" name="photo"><br> 
     <input type="submit" value="{{operation}} educator">
 </form>
-
+</div>
 {% endblock content %}

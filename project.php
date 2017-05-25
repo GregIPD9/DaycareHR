@@ -17,7 +17,9 @@ $log->pushHandler(new StreamHandler('logs/errors.log', Logger::ERROR));
 
 //DB::$host = '127.0.0.1';
 DB::$user = 'daycare';
+//DB::$user = 'cp4776_daycare';
 DB::$password = 'C653TcWF7MGFnuCm';
+//DB::$dbName = 'cp4776_daycare';
 DB::$dbName = 'daycare';
 DB::$port = 3333;
 DB::$encoding = 'utf8';
