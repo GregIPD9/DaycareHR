@@ -1,3 +1,25 @@
+--- May 24 Andrei
+DID SINCE LAST SCRUM:
+1. Added style (bootsrap)
+2. Fix edit photo ...update new
+WILL DO IN THE NEXT 24 HOURS
+1. 
+2. 
+WHERE I NEED HELP IS...
+1. 
+
+--- May 24 Gregory
+DID SINCE LAST SCRUM:
+1. Educator edit 
+2. Child edit 
+WILL DO IN THE NEXT 24 HOURS
+1. Add Return to.... on some 
+2. Modify style 
+WHERE I NEED HELP IS...
+1. 
+
+************************************************
+
 --- May 23 Andrei
 DID SINCE LAST SCRUM:
 1. Add comments for group
