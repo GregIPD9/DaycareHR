@@ -1,5 +1,6 @@
 body {
     background-image: url("child_background.jpg");
+    background-size: 100%;
     background-attachment: fixed;
 }
 table {
@@ -8,9 +9,9 @@ table {
 }
 
 #form1 {
- text-align: center;
-   align-items: center;
-    color: lightseagreen;
+    text-align: center;
+    align-items: center;
+    color: #426bf4;
     width: 250px;
     padding: 0;
     margin: 0 auto;
@@ -19,9 +20,8 @@ table {
 }
 
 #form2 {
- text-align: right;
-  
-    color: lightseagreen;
+    text-align: right;
+    color: #426bf4;
     width: 280px;
     padding: 0;
     margin: 0 auto;

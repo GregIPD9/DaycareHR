@@ -3,12 +3,13 @@
 {% block title %}{{ daycareuser.name }} - {{ daycareuser.position }}{% endblock %}
 {% block headExtra %}
     {% if daycareuser %}
+       
                     <h3>Congradulations {{ daycareuser.name }}, you've just successfully add a new Educator.</h3><br>
                 {% endif %}
 {% endblock %}
 
 {% block content %}
-    
+       <div id="form1">
     <div id="hr">
     <input type=button onClick="location.href='listofeducators'" value='Our Personal'>
     
@@ -17,5 +18,5 @@
        
     
     <h5>You may logout by clicking <a href="/logout">here</a>.</h5>
-
+     </div>
 {% endblock content %}
