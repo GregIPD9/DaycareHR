@@ -1,3 +1,25 @@
+--- May 26 Andrei
+DID SINCE LAST SCRUM:
+1. Added style (bootsrap)
+2. Fix edit photo ...update new
+WILL DO IN THE NEXT 48 HOURS
+1. Finalize Style
+2. Presentaion
+WHERE I NEED HELP IS...
+1. 
+
+--- May 26 Gregory
+DID SINCE LAST SCRUM:
+1. Style
+WILL DO IN THE NEXT 48 HOURS
+1. Add Return to.... on some 
+1. Finalize Style
+2. Presentaion
+WHERE I NEED HELP IS...
+1. 
+
+************************************************
+
 --- May 24 Andrei
 DID SINCE LAST SCRUM:
 1. Added style (bootsrap)
