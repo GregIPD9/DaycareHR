@@ -4,7 +4,9 @@ DID SINCE LAST SCRUM:
 2. Fix edit photo ...update new
 WILL DO IN THE NEXT 48 HOURS
 1. Finalize Style
-2. Presentaion
+2. Fix Educator view (style)
+3. Presentaion
+
 WHERE I NEED HELP IS...
 1. 
 

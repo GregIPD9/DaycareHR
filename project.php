@@ -140,20 +140,20 @@ $app->post('/login', function() use ($app) {
         $app->render('login_success.html.twig', array('daycareuser' => $_SESSION['daycareuser']));
     }
 });
+//TODO: Main view 
+$app->get('/main', function() use ($app) {
+   // $daycareuser = DB::queryFirstRow("SELECT position FROM users WHERE email=%s", $email);
+    if (!$_SESSION['daycareuser'] || $_SESSION['daycareuser']['position'] != 'director'){
+            $app->render("educator.html.twig");
+             } else {
+    $app->render("director.html.twig");;
+}
+});     
 
-//Director view
-$app->get('/director', function() use ($app) {
-    $app->render("director.html.twig");
-});
-
-//Educator view
-$app->get('/educator', function() use ($app) {
-    $app->render("educator.html.twig");
-});
 
 // List of educators
 $app->get('/listofeducators', function() use ($app) {
-    if (!$_SESSION['daycareuser']) {
+    if (!$_SESSION['daycareuser'] || $_SESSION['daycareuser']['position'] != 'director') {
         $app->render('login.html.twig');
         return;
     }
@@ -190,8 +190,9 @@ $app->get('/listofkids', function() use ($app) {
         $app->render('login.html.twig');
         return;
     }
-    $kids = DB::query("SELECT id,kidName,age,groupName,motherName,motherPhone,address,allergies,notes"
-                    . " FROM kids");
+    $kids = DB::query("SELECT kids.id,kids.kidName,kids.age,kids.groupName,kids.motherName,kids.motherPhone,"
+                    . "kids.address,kids.allergies,kids.notes, educators.name"
+                    . " FROM kids INNER JOIN educators ON kids.groupName=educators.groupName");
     $app->render('listofkids.html.twig', ['kids' => $kids]);
 });
 
@@ -460,41 +461,41 @@ $app->post('/editchild/:op(/:id)', function($op, $id = 0) use ($app) {
     }
 // receive data and insert
     if (!$errorList) {
-       if ($_FILES['photo']['size'] == 0) {
-          $data = array(
-            'kidName' => $kidName,
-            'age' => $age,
-            'groupName' => $groupName,
-            'motherName' => $motherName,
-            'motherPhone' => $motherPhone,
-            'fatherName' => $fatherName,
-            'fatherPhone' => $fatherPhone,
-            'address' => $address,
-            'allergies' => $allergies,
-            'notes' => $notes);
-        DB::update('kids', $data, "id=%i", $id);
-        $app->render('editchild_success.html.twig');
-    } else { 
-        $imageBinaryData = file_get_contents($photo['tmp_name']);
-        $mimeType = mime_content_type($photo['tmp_name']);
-        $data = array(
-            'kidName' => $kidName,
-            'age' => $age,
-            'groupName' => $groupName,
-            'motherName' => $motherName,
-            'motherPhone' => $motherPhone,
-            'fatherName' => $fatherName,
-            'fatherPhone' => $fatherPhone,
-            'address' => $address,
-            'allergies' => $allergies,
-            'notes' => $notes,
-            'photo' => $imageBinaryData,
-            'photomimetype' => $mimeType);
-        DB::update('kids', $data, "id=%i", $id);
-        $app->render('editchild_success.html.twig');
-    }
-    }else{
-       $app->render('addchild.html.twig');
+        if ($_FILES['photo']['size'] == 0) {
+            $data = array(
+                'kidName' => $kidName,
+                'age' => $age,
+                'groupName' => $groupName,
+                'motherName' => $motherName,
+                'motherPhone' => $motherPhone,
+                'fatherName' => $fatherName,
+                'fatherPhone' => $fatherPhone,
+                'address' => $address,
+                'allergies' => $allergies,
+                'notes' => $notes);
+            DB::update('kids', $data, "id=%i", $id);
+            $app->render('editchild_success.html.twig');
+        } else {
+            $imageBinaryData = file_get_contents($photo['tmp_name']);
+            $mimeType = mime_content_type($photo['tmp_name']);
+            $data = array(
+                'kidName' => $kidName,
+                'age' => $age,
+                'groupName' => $groupName,
+                'motherName' => $motherName,
+                'motherPhone' => $motherPhone,
+                'fatherName' => $fatherName,
+                'fatherPhone' => $fatherPhone,
+                'address' => $address,
+                'allergies' => $allergies,
+                'notes' => $notes,
+                'photo' => $imageBinaryData,
+                'photomimetype' => $mimeType);
+            DB::update('kids', $data, "id=%i", $id);
+            $app->render('editchild_success.html.twig');
+        }
+    } else {
+        $app->render('addchild.html.twig');
     }
 })->conditions(array(
     'op' => '(add|edit)',
@@ -602,8 +603,8 @@ $app->post('/editeducator/:op(/:id)', function($op, $id = 0) use ($app) {
             DB::update('educators', $data, "id=%i", $id);
             $app->render('editeducator_success.html.twig');
         }
-    }else{
-       $app->render('addeducator.html.twig');
+    } else {
+        $app->render('addeducator.html.twig');
     }
 })->conditions(array(
     'op' => '(add|edit)',

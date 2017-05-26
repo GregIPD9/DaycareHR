@@ -6,14 +6,16 @@
     <div class="wrap2" >
         <h2>
             <strong>List of Children</strong>
-             <div>
-                 <a href="/addchild" class="button">Add new Child</a>
+             <div >
+                 <a style="display: inline-block" href="/addchild" class="button">Add new Child</a>
+                 <a style="display: inline-block" href="/main" class="button">Return to Main</a>
             </div> 
         </h2>
             <table border="1">
                 <th>Name</th>
                 <th>Age</th>
                 <th>Photo</th>
+                <th>Educator</th>
                 <th>Allergies</th>
                 <th>Group</th>
                 <th>Mother</th>
@@ -24,10 +26,12 @@
                 <th>Edit</th>
                 <th>Delete</th>
                     {% for k in kids %}
+                  
                     <tr>
                         <td>{{ k.kidName }}</td>
                         <td>{{ k.age }}</td>
                         <td><img src="/viewphotokids/{{k.id}}"></td>
+                        <td>{{ k.name }}</td>
                         <td>{{ k.allergies }}</td>
                         <td>{{ k.groupName }}</td>
                         <td>{{ k.motherName }}</td>
@@ -42,6 +46,8 @@
                         <td><a href="/deletechild/delete/{{k.id}}">delete</a></td>
                     </tr>
                 {% endfor %}
+               
+
             </table>
              
     </div>
