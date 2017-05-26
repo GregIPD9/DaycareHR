@@ -1,11 +1,12 @@
 {% extends "master.html.twig" %}
 
-{% block title %}List of Children{% endblock %}
+{% block title %}Child{% endblock %}
 
 {% block content %}
     <div class="wrap2" >
+        {% for c in childinfo %}
         <h2>
-            <strong>List of Children</strong>
+            <strong>Child: {{ c.kidName }} </strong>
              <div >
                  <a style="display: inline-block" href="/addchild" class="button">Add new Child</a>
                  <a style="display: inline-block" href="/main" class="button">Return to Main</a>
@@ -24,33 +25,29 @@
                 <th>Map</th>
                 <th>Notes</th>
                 <th>Modify</th>
-                
-                    {% for k in kids %}
-                  
                     <tr>
-                        <td><a href="/childinfo/{{ k.id }}" target="_blank">{{ k.kidName }}</td>
-                        <td>{{ k.age }}</td>
-                        <td><img src="/viewphotokids/{{k.id}}"></td>
-                        <td>{{ k.name }}</td>
-                        <td>{{ k.allergies }}</td>
-                        <td>{{ k.groupName }}</td>
-                        <td>{{ k.motherName }}</td>
-                        <td>{{ k.motherPhone }}</td>
-                        <td class="center"><a href="https://maps.google.com/?q={{ k.address }}" target="_blank">{{ k.address }}</a></td>
+                        <td>{{ c.kidName }}</td>
+                        <td>{{ c.age }}</td>
+                        <td><img src="/viewphotokids/{{c.id}}"></td>
+                        <td>{{ c.name }}</td>
+                        <td>{{ c.allergies }}</td>
+                        <td>{{ c.groupName }}</td>
+                        <td>{{ c.motherName }}</td>
+                        <td>{{ c.motherPhone }}</td>
+                        <td class="center"><a href="https://maps.google.com/?q={{ c.address }}" target="_blank">{{ c.address }}</a></td>
                         <td>
                             <iframe width="300" height="160" frameborder="0" scrolling="no" marginheight="0" 
-                                    marginwidth="0" src="https://maps.google.ca/maps?q={{ k.address }}
+                                    marginwidth="0" src="https://maps.google.ca/maps?q={{ c.address }}
                                     &output=embed"></iframe></td>
-                        <td>{{ k.notes }}</td>
-                        <td><a href="/editchild/edit/{{k.id}}">edit</a>
-                        <a href="/deletechild/delete/{{k.id}}">delete</a></td>
+                        <td>{{ c.notes }}</td>
+                        <td><a href="/editchild/edit/{{c.id}}">edit</a>
+                        <a href="/deletechild/delete/{{c.id}}">delete</a></td>
                     </tr>
                 {% endfor %}
-               
-
             </table>
              
     </div>
           
 {% endblock %}
 
+{# empty Twig template #}

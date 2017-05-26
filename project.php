@@ -196,6 +196,18 @@ $app->get('/listofkids', function() use ($app) {
     $app->render('listofkids.html.twig', ['kids' => $kids]);
 });
 
+// Child Info page
+$app->get('/childinfo/:id', function($id) use ($app) {
+    if (!$_SESSION['daycareuser']) {
+        $app->render('login.html.twig');
+        return;
+    }
+    $childinfo = DB::query("SELECT id,kidName,age,groupName,motherName,motherPhone,"
+                    . "address,allergies,notes"
+                    . " FROM kids WHERE id=%i", $id);
+    $app->render('childinfo.html.twig', ['childinfo' => $childinfo]);
+});
+
 // List of kids
 $app->get('/editchild/edit/listofkids', function() use ($app) {
     if (!$_SESSION['daycareuser']) {
