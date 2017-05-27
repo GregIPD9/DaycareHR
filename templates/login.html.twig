@@ -17,8 +17,10 @@ Password: <br><input type="password" placeholder="Enter Password" name="pass">
         <input type="submit" value="Login">
     </div>
 
-<p>If you forgot your password <br>you can reset it by clicking<a href="/passreset">here</a>.</p>
 
+   
+<a href="/passreset" class="button">Click here if you forgot your password</a><br>
+   
 {% if error %}
     <p class="errorList">Login failed try again.</p>
 {% endif %}

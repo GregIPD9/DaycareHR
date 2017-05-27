@@ -3,30 +3,18 @@
 {% block title %}{{ daycareuser.name }} - {{ daycareuser.position }}{% endblock %}
 {% block headExtra %}
     {% if daycareuser %}
-                    <h3>Welcome {{ daycareuser.name }}.</h3><br>
+                    
                 {% endif %}
 {% endblock %}
 
 {% block content %}
-    
-    <div id="hr">
-    
-    <input type=button onClick="location.href='listofkids'" value='Our Kids'>
-    </div><br>
-    
-    <div id="hr">
-    <input type=button onClick="location.href='listofkidcomments'" value='Comments about kids'>
-    
-    <input type=button onClick="location.href='listofgroupcomments'" value='Comments about groups'>
-    </div><br>
-    
-    <div id="hr">
-    <input type=button onClick="location.href='childcomment'" value='Add a new comment about child'>
-    
-    <input type=button onClick="location.href='groupcomment'" value='Add a new comment about group'>
-    </div><br><br><br>
-       
-    
-    <h5>You may logout by clicking <a href="/logout">here</a>.</h5>
-
+      
+    <div class="wrap" >           
+  		<a href="listofkids" class="button2">See our Children</a>    
+	        <a href="listofkidcomments" class="button">Comments about child</a>
+  		<a href="listofgroupcomments" class="button2">Comments about group</a>
+                <a href="childcomment" class="button">Add comment for child</a>
+                <a href="groupcomment" class="button2">Add comment for group</a>    
+                <h3><a href="/logout">LOGOUT</a></h3>
+</div>
 {% endblock content %}

@@ -3,7 +3,8 @@
 {% block title %}Add a new Educator{% endblock %}
 
 {% block content %}
-    
+     <div class="wrap" >
+        <div id="form2">
 {% if errorList %}
     <ul class="errorList">
         {% for error in errorList %}
@@ -23,9 +24,10 @@
     Last Vacation: <input type="date" name="previousVacation" value="{{v.previousVacation}}"><br>
     Next Vacation: <input type="date" name="nextVacation" value="{{v.nextVacation}}"><br>
     Salary/Year: <input type="integer" placeholder="Enter Yearly salary here" name="yearlySalary" value="{{v.yearlySalary}}"><br>
-    Photo: <input type="file" name="photo"><br>
+    Photo:<input type="file" name="photo">
     
     <input type="submit" value="Add educator">
 </form>
-
+        </div>
+     </div>
 {% endblock content %}

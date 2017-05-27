@@ -4,50 +4,42 @@
 
 {% block content %}
     <div class="wrap2" >
-        {% for c in childinfo %}
-        <h2>
-            <strong>Child: {{ c.kidName }} </strong>
+        {% for c in childinfo %}   
              <div >
-                 <a style="display: inline-block" href="/addchild" class="button">Add new Child</a>
-                 <a style="display: inline-block" href="/main" class="button">Return to Main</a>
+                 <a href="/main" class="button">Return to Main</a>
             </div> 
-        </h2>
             <table border="1">
                 <th>Name</th>
                 <th>Age</th>
                 <th>Photo</th>
-                <th>Educator</th>
                 <th>Allergies</th>
                 <th>Group</th>
                 <th>Mother</th>
                 <th>Phone</th>
-                <th>Address</th>
-                <th>Map</th>
-                <th>Notes</th>
                 <th>Modify</th>
                     <tr>
                         <td>{{ c.kidName }}</td>
                         <td>{{ c.age }}</td>
                         <td><img src="/viewphotokids/{{c.id}}"></td>
-                        <td>{{ c.name }}</td>
                         <td>{{ c.allergies }}</td>
                         <td>{{ c.groupName }}</td>
                         <td>{{ c.motherName }}</td>
                         <td>{{ c.motherPhone }}</td>
-                        <td class="center"><a href="https://maps.google.com/?q={{ c.address }}" target="_blank">{{ c.address }}</a></td>
-                        <td>
-                            <iframe width="300" height="160" frameborder="0" scrolling="no" marginheight="0" 
-                                    marginwidth="0" src="https://maps.google.ca/maps?q={{ c.address }}
-                                    &output=embed"></iframe></td>
-                        <td>{{ c.notes }}</td>
                         <td><a href="/editchild/edit/{{c.id}}">edit</a>
                         <a href="/deletechild/delete/{{c.id}}">delete</a></td>
                     </tr>
-                {% endfor %}
-            </table>
-             
-    </div>
-          
+                
+            </table><br>
+            <h2>Special Notes about this child:</h2>
+            <h3>
+                {{ c.notes }}
+            </h3>
+    
+                <div>
+                   <iframe width="600" height="400" frameborder="0" scrolling="no" marginheight="0" 
+                                    marginwidth="0" src="https://maps.google.ca/maps?q={{ c.address }}
+                                    &output=embed"></iframe>
+                </div></div>{% endfor %}
 {% endblock %}
 
 {# empty Twig template #}

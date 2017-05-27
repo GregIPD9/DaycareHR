@@ -3,7 +3,8 @@
 {% block title %}Add a new Child{% endblock %}
 
 {% block content %}
-    
+    <div class="wrap" >
+        <div id="form2">
 {% if errorList %}
     <ul class="errorList">
         {% for error in errorList %}
@@ -25,10 +26,14 @@
     Address: <input type="text" placeholder="Enter a full address here" name="address" value="{{v.address}}"><br>
     Allergies: <input type="text" placeholder="Enter notes about allergies" name="allergies" value="{{v.allergies}}"><br>
     Notes: <input type="text" placeholder="Enter any notes here" name="notes" value="{{v.notes}}"><br>
-    Photo: <input type="file" name="photo"><br>
+    Photo: <input type="file" name="photo">
     
-    <input type="submit" value="Add child">
+    <input type="submit" value="Add child"><br><br>
+    
 </form>
-
+ </div>
+    <a style="display: inline-block" href="/main" class="button">Return to Main</a>
+     </div>
+    
 {% endblock content %}
 

@@ -4,32 +4,13 @@
 {% block headExtra %}
     {% if daycareuser %}
        
-                    <h3>Congradulations {{ daycareuser.name }}, you've just successfully add a new Comment.</h3><br>
+                    <h3>Congradulations {{ daycareuser.name }}, you've just successfully add a new Comment.</h3>
                 {% endif %}
 {% endblock %}
 
 {% block content %}
-      <div id="form1"> 
-    <!-- To fix - display links for comments tables -->
-    <div id="hr">
-    <input type=button onClick="location.href='listofgroupcomments'" value='Our Personal'>
-    
-    <input type=button onClick="location.href='listofkidcomments'" value='Our Kids'>
-    </div><br>
-    
-    <div id="hr">
-    <input type=button onClick="location.href='listofkidcomments'" value='Comments about kids'>
-    
-    <input type=button onClick="location.href='listofgroupcomments'" value='Comments about groups'>
-    </div><br>
-    
-    <div id="hr">
-    <input type=button onClick="location.href='childcomment'" value='Add a new comment about child'>
-    
-    <input type=button onClick="location.href='groupcomment'" value='Add a new comment about group'>
-    </div><br><br><br>
-    
-    <h5>You may logout by clicking <a href="/logout">here</a>.</h5>
+      <div class="wrap"> 
+    <a href="/main" class="button">Return to Main</a>
      </div>
 {% endblock content %}
 
